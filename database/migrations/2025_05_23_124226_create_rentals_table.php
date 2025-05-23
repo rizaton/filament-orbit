@@ -13,6 +13,23 @@ return new class extends Migration
     {
         Schema::create('rentals', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('performed_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('name');
+            $table->string('address');
+            $table->string('phone');
+            $table->enum('status', [
+                'pending',
+                'approved',
+                'rejected',
+                'returned',
+                'late'
+            ])->default('pending');
+            $table->decimal('down_payment', 15, 2);
+            $table->date('rent_date');
+            $table->date('return_date');
+            $table->date('late_date')->nullable();
+            $table->decimal('late_fees', 15, 2)->nullable();
+            $table->decimal('total_fees', 15, 2)->nullable();
             $table->timestamps();
         });
     }
