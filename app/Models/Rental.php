@@ -9,21 +9,64 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Rental extends Model
 {
-    use HasFactory;
-
+    /**
+     * Atribut yang dapat diisi secara massal.
+     * 
+     * @var list<string>
+     */
     protected $fillable = [
-        'user_id',
-        'tanggal_sewa',
-        'tanggal_kembali',
+        'performed_by',
+        'name',
+        'address',
+        'phone',
         'status',
-        'total_harga'
+        'down_payment',
+        'rent_date',
+        'return_date',
+        'late_date',
+        'late_fees',
+        'total_fees'
     ];
 
+    /**
+     * Atribut yang harus di-cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'performed_by' => 'integer',
+            'name' => 'string',
+            'address' => 'string',
+            'phone' => 'string',
+            'status' => 'string',
+            'down_payment' => 'decimal:2',
+            'rent_date' => 'date',
+            'return_date' => 'date',
+            'late_date' => 'date',
+            'late_fees' => 'decimal:2',
+            'total_fees' => 'decimal:2'
+        ];
+    }
+
+    /**
+     * Mengambil data pengguna yang memproses sewa.
+     *
+     * @return BelongsTo<\Database\Eloquent\Relations\BelongsTo>
+     * @see \App\Models\User
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Mengambil semua detail penyewaan yang terkait dengan sewa ini.
+     *
+     * @return HasMany<\Database\Eloquent\Relations\HasMany>
+     * @see \App\Models\RentalDetail
+     */
     public function rentaldetails(): HasMany
     {
         return $this->hasMany(RentalDetail::class);

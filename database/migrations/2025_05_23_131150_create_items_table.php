@@ -18,8 +18,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->integer('stock');
+            $table->text('description')->nullable();
             $table->boolean('is_available')->default(false);
-            $table->decimal('rent_price', 10, 2);
+            $table->decimal('rent_price', 15, 2);
             $table->timestamps();
         });
         DB::statement("ALTER TABLE items ADD image MEDIUMBLOB NULL");

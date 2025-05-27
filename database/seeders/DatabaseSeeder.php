@@ -16,8 +16,14 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin',
+            'email' => 'admin@orbitoutdoor.my.id',
+        ]);
+        $this->call([
+            CategorySeeder::class,
+            ItemSeeder::class,
+            TermSeeder::class,
+            RuleSeeder::class,
         ]);
     }
 }

@@ -184,44 +184,48 @@
                         <div class="h-56 w-full">
                             <a href="/items/{{ $item->slug }}">
                                 @if ($item->image)
-                                    <img src="data:image/png;base64,{{ $item->image }}"
+                                    <img class="mx-auto h-full dark:hidden"
+                                        src="data:image/png;base64,{{ $item->image }}"
                                         alt="image-{{ $item->slug }}">
+                                    <img class="mx-auto hidden h-full dark:block"
+                                        src="data:image/png;base64,{{ $item->image }}"
+                                        alt="image-{{ $item->slug }}">
+                                @else
+                                    <img class="mx-auto h-full dark:hidden"
+                                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg"
+                                        alt="" />
+                                    <img class="mx-auto hidden h-full dark:block"
+                                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
+                                        alt="" />
+                                @endif
+                            </a>
                         </div>
-                    @else
-                        <img class="mx-auto h-full dark:hidden"
-                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg" alt="" />
-                        <img class="mx-auto hidden h-full dark:block"
-                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
-                            alt="" />
-                @endif
-                </a>
-            </div>
-            <div class="pt-6">
-                <div class="mb-4 flex items-center justify-between gap-4">
-                    <a href="/items?category={{ $item->category->slug }}">
-                        <span
-                            class="me-2 rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300">
-                            {{ $item->category->name }}
-                        </span>
-                    </a>
-                </div>
-                <div class="md:h-12">
-                    <a href="/items/{{ $item->slug }}"
-                        class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">
-                        {{ Str::limit($item->name, 35, '...') }}
-                    </a>
-                </div>
+                        <div class="pt-6">
+                            <div class="mb-4 flex items-center justify-between gap-4">
+                                <a href="/items?category={{ $item->category->slug }}">
+                                    <span class="me-2 rounded px-2.5 py-0.5 text-xs font-medium text-white"
+                                        style="background-color: {{ $item->category->color }};">
+                                        {{ $item->category->name }}
+                                    </span>
+                                </a>
+                            </div>
+                            <div class="md:h-12">
+                                <a href="/items/{{ $item->slug }}"
+                                    class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">
+                                    {{ Str::limit($item->name, 35, '...') }}
+                                </a>
+                            </div>
 
-                <div class="mt-4 flex items-center justify-between gap-4">
-                    <p class="text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                        Rp.{{ number_format($item->sewa) }}
-                    </p>
+                            <div class="mt-4 flex items-center justify-between gap-4">
+                                <p class="text-xl font-bold leading-tight text-gray-900 dark:text-white">
+                                    Rp.{{ number_format($item->rent_price) }}
+                                </p>
 
-                    <button type="button" x-data
-                        @click="
+                                <button type="button" x-data
+                                    @click="
                                         let slug = '{{ $item->slug }}';
                                         let name = '{{ $item->name }}';
-                                        let sewa = '{{ $item->sewa }}';
+                                        let sewa = '{{ $item->rent_price }}';
                                         sewa = Number(sewa);
                                         let stock = '{{ $item->stock }}';
                                         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -243,21 +247,22 @@
                                             detail: { name }
                                         }));
                                     "
-                        class="inline-flex items-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                        <svg class="-ms-2 me-2 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6" />
-                        </svg>
-                        Tambah ke keranjang
-                    </button>
-                </div>
+                                    class="inline-flex items-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                                    <svg class="-ms-2 me-2 h-5 w-5" aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6" />
+                                    </svg>
+                                    Tambah ke keranjang
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+                {{-- Product End --}}
             </div>
         </div>
-        @endforeach
-        {{-- Product End --}}
-        </div>
-        </div>
     </section>
-    </x-user-layo>
+</x-guest-layout>

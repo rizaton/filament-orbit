@@ -42,7 +42,15 @@
                 x-init="loadCart();
                 window.addEventListener('storage', () => loadCart())">
                 <template x-if="cart.length === 0">
-                    <div class="text-gray-500 dark:text-gray-400 text-sm py-8">Keranjang kosong</div>
+                    <div class="w-fit mx-auto flex items-center justify-center flex-col">
+                        <div class="text-gray-500 dark:text-gray-400 text-2xl text-center font-medium">
+                            Keranjang kamu kosong nih
+                        </div>
+                        <a href="/items" title="Continue Shopping"
+                            class="my-2 px-5 rounded-lg border border-gray-200 bg-white py-2.5 flex flex-row justify-center items-center gap-2 text-sm font-medium text-primary-700 hover:underline dark:text-primary-500">
+                            Cari alat dulu yuk
+                        </a>
+                    </div>
                 </template>
                 <div class="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl" x-show="cart.length > 0">
                     <template x-for="(item, idx) in cart" :key="item[0]">
@@ -131,7 +139,7 @@
                                                         stroke-linejoin="round" stroke-width="2"
                                                         d="M6 18 17.94 6M18 18 6.06 6" />
                                                 </svg>
-                                                Remove
+                                                Hapus
                                             </button>
                                         </div>
                                     </div>
@@ -149,7 +157,8 @@
                                 <template x-for="item in cart" :key="item[0]">
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-base font-normal text-gray-500 dark:text-gray-400"
-                                            x-text="item[2]"></dt>
+                                            x-text="item[2]">
+                                        </dt>
                                         <dd class="text-base font-medium text-gray-900 dark:text-white">
                                             Rp.<span x-text="Number(item[3]).toLocaleString()"></span>
                                         </dd>
@@ -164,7 +173,7 @@
                                 </dd>
                             </dl>
                         </div>
-                        <a href="#"
+                        <a href="/checkout"
                             class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
                             Proses Sewa
                         </a>
@@ -172,7 +181,7 @@
                             <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> atau </span>
                             <a href="/items" title="Continue Shopping"
                                 class="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500">
-                                Lanjut Belanja
+                                Lanjut cari alat
                                 <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"

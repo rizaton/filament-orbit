@@ -11,38 +11,84 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Item extends Model
 {
-    use HasFactory;
-
+    /**
+     * Atribut yang dapat diisi secara massal.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
         'slug',
         'name',
         'stock',
+        'rent_price',
+        'description',
         'category_id',
         'is_available',
         'image',
-        'sewa',
     ];
 
+    /**
+     * Relasi dengan model Category.
+     *
+     * @var list<string>
+     * @see \App\Models\Category
+     */
     protected $with = ['category'];
 
+    /**
+     * Mengambil semua detail penyewaan yang terkait dengan item ini.
+     *
+     * @return HasMany<\Database\Eloquent\Relations\HasMany>
+     * @see \App\Models\RentalDetail
+     */
     public function rentaldetails(): HasMany
     {
         return $this->hasMany(RentalDetail::class);
     }
 
-    public function category()
+    /**
+     * Atribut yang harus di-cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'slug' => 'string',
+            'name' => 'string',
+            'stock' => 'integer',
+            'rent_price' => 'decimal:2',
+            'description' => 'string',
+            'category_id' => 'integer',
+            'is_available' => 'boolean',
+        ];
+    }
+
+    /**
+     * Mengambil detail kategori yang terkait dengan item ini.
+     *
+     * @return BelongsTo<\Database\Eloquent\Relations\BelongsTo>
+     * @see \App\Models\Category
+     */
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function scopeFilter(Builder $query, array $filters)
+    /**
+     * Scope untuk memfilter item berdasarkan kriteria tertentu.
+     *
+     * @param Builder $query
+     * @param array $filters
+     * @return void
+     */
+    public function scopeFilter(Builder $query, array $filters): void
     {
-        $query
-            ->when(
-                $filters['search'] ?? false,
-                fn($query, $search) => $query
-                    ->where('name', 'like', '%' . $search . '%')
-            );
+        $query->when(
+            $filters['search'] ?? false,
+            fn($query, $search) => $query
+                ->where('name', 'like', '%' . $search . '%')
+        );
         $query->when(
             $filters['category'] ?? false,
             function ($query, $category) {
@@ -98,24 +144,12 @@ class Item extends Model
             }
         );
         $query->when(
-            $filters['price'] ?? false,
-            function ($query, $sort) {
-                if ($sort === 'highest') {
-                    $query->orderByDesc('sewa');
-                } elseif ($sort === 'lowest') {
-                    $query->orderBy('sewa');
-                } else {
-                    $query->latest();
-                }
-            }
-        );
-        $query->when(
             $filters['sort'] ?? false,
             function ($query, $sort) {
                 if ($sort === 'highest') {
-                    $query->orderByDesc('sewa');
+                    $query->orderByDesc('rent_price');
                 } elseif ($sort === 'lowest') {
-                    $query->orderBy('sewa');
+                    $query->orderBy('rent_price');
                 } else {
                     $query->latest();
                 }

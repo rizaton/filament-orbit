@@ -3,20 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Message extends Model
+class Rule extends Model
 {
     /**
      * Atribut yang dapat diisi secara massal.
-     *
+     * 
      * @var list<string>
      */
     protected $fillable = [
+        'slug',
         'name',
-        'email',
-        'subject',
-        'message',
+        'description'
     ];
 
     /**
@@ -27,10 +25,9 @@ class Message extends Model
     protected function casts(): array
     {
         return [
+            'slug' => 'string',
             'name' => 'string',
-            'email' => 'string',
-            'subject' => 'string',
-            'message' => 'string',
+            'description' => 'string',
         ];
     }
 }

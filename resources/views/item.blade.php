@@ -61,10 +61,18 @@
             </div>
             <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
                 <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
-                    <img class="w-full dark:hidden"
-                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg" alt="" />
-                    <img class="w-full hidden dark:block"
-                        src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="" />
+                    @if ($item->image)
+                        <img class="mx-auto h-full dark:hidden" src="data:image/png;base64,{{ $item->image }}"
+                            alt="image-{{ $item->slug }}">
+                        <img class="mx-auto hidden h-full dark:block" src="data:image/png;base64,{{ $item->image }}"
+                            alt="image-{{ $item->slug }}">
+                    @else
+                        <img class="w-full dark:hidden"
+                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg" alt="" />
+                        <img class="w-full hidden dark:block"
+                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
+                            alt="" />
+                    @endif
                 </div>
 
                 <div class="mt-6 sm:mt-8 lg:mt-0">
@@ -73,7 +81,7 @@
                     </h1>
                     <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
                         <p class="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white">
-                            Rp.{{ number_format($item->sewa) }}/hari
+                            Rp.{{ number_format($item->rent_price) }}/hari
                         </p>
                     </div>
 
@@ -119,15 +127,7 @@
                     <hr class="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
 
                     <p class="mb-6 text-gray-500 dark:text-gray-400">
-                        Studio quality three mic array for crystal clear calls and voice
-                        recordings. Six-speaker sound system for a remarkably robust and
-                        high-quality audio experience. Up to 256GB of ultrafast SSD storage.
-                    </p>
-
-                    <p class="text-gray-500 dark:text-gray-400">
-                        Two Thunderbolt USB 4 ports and up to two USB 3 ports. Ultrafast
-                        Wi-Fi 6 and Bluetooth 5.0 wireless. Color matched Magic Mouse with
-                        Magic Keyboard or Magic Keyboard with Touch ID.
+                        {{ $item->description }}
                     </p>
                 </div>
             </div>
