@@ -16,6 +16,6 @@ class CreateCategory extends CreateRecord
     }
     protected function getCreatedNotificationTitle(): ?string
     {
-        return 'Category Created';
+        return 'Kategori baru berhasil ditambahkan';
     }
 }

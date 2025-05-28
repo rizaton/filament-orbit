@@ -27,7 +27,7 @@ class ItemController extends Controller
          * Jika tidak ada parameter yang diberikan, akan mengambil semua item.
          * @see \App\Models\Item
          */
-        $itemsQuery = Item::filter($request->only(['search', 'category', 'sort']));
+        $itemsQuery = Item::filter($request->only(['search', 'category', 'sort']))->where('is_available', true);
 
         /**
          * Jika parameter 'paginate' diatur ke 'false', ambil semua item.

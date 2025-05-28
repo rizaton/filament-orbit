@@ -9,11 +9,4 @@ use Filament\Resources\Pages\ListRecords;
 class ListRentals extends ListRecords
 {
     protected static string $resource = RentalResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
 }

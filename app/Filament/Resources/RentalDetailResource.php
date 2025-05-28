@@ -21,7 +21,7 @@ class RentalDetailResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationGroup = 'Penyewaan';
     protected static ?string $slug = 'rent/rental-details';
@@ -60,27 +60,31 @@ class RentalDetailResource extends Resource
                     ->label('ID Sewa')
                     ->numeric()
                     ->sortable()
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('rental.name')
                     ->label('Nama Penyewa')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('item_id')
                     ->label('ID Barang')
+                    ->searchable()
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('item.name')
                     ->label('Nama Alat')
+                    ->searchable()
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label('Jumlah')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_returned')
-                    ->label('Sudah Dikembalikan')
-                    ->boolean(),
+                Tables\Columns\ToggleColumn::make('is_returned')
+                    ->label('Sudah Dikembalikan'),
                 Tables\Columns\TextColumn::make('sub_total')
+                    ->searchable()
                     ->label('Sub Total')
                     ->numeric()
                     ->sortable(),
@@ -96,7 +100,12 @@ class RentalDetailResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('is_returned')
+                    ->label('Status Pengembalian')
+                    ->options([
+                        true => 'Sudah Dikembalikan',
+                        false => 'Belum Dikembalikan',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

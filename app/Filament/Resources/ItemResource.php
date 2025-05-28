@@ -26,7 +26,7 @@ class ItemResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-cube';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
     protected static ?string $navigationGroup = 'Inventori';
 
     protected static ?string $slug = 'inventory/items';
@@ -35,17 +35,6 @@ class ItemResource extends Resource
     protected static ?string $pluralModelLabel = 'List Alat-alat';
     protected static ?string $modelLabel = 'Alat';
     protected static ?string $breadcrumb = 'Alat';
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Action::make('edit')
-                ->url(route('posts.edit', ['post' => $this->post])),
-            Action::make('delete')
-                ->requiresConfirmation()
-                ->action(fn() => $this->post->delete()),
-        ];
-    }
 
     public static function form(Form $form): Form
     {
@@ -130,9 +119,8 @@ class ItemResource extends Resource
                 Tables\Columns\TextColumn::make('category.name')
                     ->label('Kategori')
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_available')
-                    ->label('Tersedia')
-                    ->boolean(),
+                Tables\Columns\ToggleColumn::make('is_available')
+                    ->label('Tersedia'),
                 Tables\Columns\TextColumn::make('rent_price')
                     ->label('Harga Sewa')
                     ->money('IDR')

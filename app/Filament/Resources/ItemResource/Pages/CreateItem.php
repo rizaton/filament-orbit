@@ -16,6 +16,6 @@ class CreateItem extends CreateRecord
     }
     protected function getCreatedNotificationTitle(): ?string
     {
-        return 'Item Created';
+        return 'Alat baru berhasil ditambahkan';
     }
 }

@@ -10,18 +10,12 @@ class EditItem extends EditRecord
 {
     protected static string $resource = ItemResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\DeleteAction::make(),
-        ];
-    }
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
     }
     protected function getCreatedNotificationTitle(): ?string
     {
-        return 'Item Edited';
+        return 'Alat berhasil diperbarui';
     }
 }

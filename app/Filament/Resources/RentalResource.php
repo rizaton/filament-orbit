@@ -22,7 +22,7 @@ class RentalResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $navigationGroup = 'Penyewaan';
     protected static ?string $slug = 'rent/rentals';
@@ -100,16 +100,32 @@ class RentalResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID Sewa')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Diproses oleh')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('phone')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\SelectColumn::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'rented' => 'Rented',
+                        'returned' => 'Returned',
+                        'late' => 'Late',
+                    ]),
                 Tables\Columns\TextColumn::make('down_payment')
                     ->numeric()
                     ->sortable(),
@@ -121,7 +137,8 @@ class RentalResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('late_date')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('late_fees')
                     ->numeric()
                     ->sortable(),
@@ -174,7 +191,6 @@ class RentalResource extends Resource
     {
         return [
             'index' => Pages\ListRentals::route('/'),
-            'create' => Pages\CreateRental::route('/create'),
             'edit' => Pages\EditRental::route('/{record}/edit'),
         ];
     }
