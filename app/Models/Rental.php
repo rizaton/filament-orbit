@@ -71,4 +71,31 @@ class Rental extends Model
     {
         return $this->hasMany(RentalDetail::class);
     }
+
+    protected static function booted()
+    {
+        static::updated(function (Rental $rental) {
+            if (!$rental->wasChanged('status')) {
+                return;
+            }
+
+            foreach ($rental->rentalDetails as $detail) {
+                $item = $detail->item;
+
+                if (!$item) {
+                    continue;
+                }
+
+                if ($rental->status === 'approved') {
+                    if ($item->is_available) {
+                        $item->decrement('stock', $detail->quantity);
+                        $item->update(['is_available' => $item->stock > 0]);
+                    }
+                } elseif ($rental->status === 'returned') {
+                    $item->increment('stock', $detail->quantity);
+                    RentalDetail::where('rental_id', $rental->id)->update(['is_returned' => true]);
+                }
+            }
+        });
+    }
 }

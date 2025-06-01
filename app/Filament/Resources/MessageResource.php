@@ -63,16 +63,42 @@ class MessageResource extends Resource
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Diubah Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('created_date')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')->label('Tanggal pesan dibuat dari'),
+                        Forms\Components\DatePicker::make('created_until')->label('Tanggal pesan sampai'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->label('Lihat')
+                    ->modalHeading(fn($record) => "Pesan dari: {$record->name}")
+                    ->modalContent(fn($record) => view('filament.custom.message-details', [
+                        'record' => $record,
+                    ]))->form([]),
+
             ])
             ->emptyStateHeading('Tidak ada pesan yang ditemukan')
             ->emptyStateDescription('Saat ini tidak ada pesan yang tersedia.')

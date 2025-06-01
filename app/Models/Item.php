@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class Item extends Model
 {
@@ -155,5 +156,29 @@ class Item extends Model
                 }
             }
         );
+    }
+
+    /**
+     * Method "booted" untuk menangani event model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::updated(function (Item $item) {
+            if ($item->isDirty('rent_price')) {
+                $item->loadMissing('rentaldetails.rental');
+                foreach ($item->rentaldetails as $detail) {
+                    if (!$detail->rental || $detail->is_returned) {
+                        continue;
+                    }
+                    DB::transaction(function () use ($detail, $item) {
+                        $detail->sub_total = $detail->quantity * $item->rent_price;
+
+                        $detail->saveQuietly();
+                    });
+                }
+            }
+        });
     }
 }

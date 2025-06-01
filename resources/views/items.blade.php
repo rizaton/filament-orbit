@@ -176,7 +176,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4 overflow-auto">
+            <div class="mb-4 grid gap-4 grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4 overflow-auto">
                 {{-- Product Start --}}
                 @foreach ($items as $key => $item)
                     <div
@@ -202,7 +202,7 @@
                         </div>
                         <div class="pt-6">
                             <div class="mb-4 flex items-center justify-between gap-4">
-                                <a href="/items?category={{ $item->category->slug }}">
+                                <a href="/items?category%5B%5D={{ $item->category->slug }}">
                                     <span class="me-2 rounded px-2.5 py-0.5 text-xs font-medium text-white"
                                         style="background-color: {{ $item->category->color }};">
                                         {{ $item->category->name }}
@@ -216,7 +216,7 @@
                                 </a>
                             </div>
 
-                            <div class="mt-4 flex items-center justify-between gap-4">
+                            <div class="mt-4 flex items-center justify-between gap-4 flex-col sm:flex-row">
                                 <p class="text-xl font-bold leading-tight text-gray-900 dark:text-white">
                                     Rp.{{ number_format($item->rent_price) }}
                                 </p>

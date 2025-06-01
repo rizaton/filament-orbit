@@ -40,6 +40,7 @@ class CategoryResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nama Kategori')
                     ->live(onBlur: true)
                     ->unique(Category::class, 'name', ignoreRecord: true)
                     ->required()
@@ -48,16 +49,15 @@ class CategoryResource extends Resource
                         if (($get('slug') ?? '') !== Str::slug($old)) {
                             return;
                         }
-
                         $set('slug', Str::slug($state));
                     }),
                 Forms\Components\TextInput::make('slug')
                     ->required()
                     ->maxLength(255)
                     ->unique(Category::class, 'slug', ignoreRecord: true)
-                    ->label('Category Slug'),
+                    ->label('Slug Kategori'),
                 Forms\Components\ColorPicker::make('color')
-                    ->label('Category Color')
+                    ->label('Warna Kategori')
                     ->default('#000000')
                     ->required(),
             ]);
@@ -68,26 +68,81 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->label('Nama Kategori')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('items_count')
+                    ->label('Jumlah Alat')
+                    ->counts('items')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\ColorColumn::make('color')
-                    ->searchable(),
+                    ->label('Warna Kategori')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Diubah Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('items_count')
+                    ->form([
+                        Forms\Components\TextInput::make('items_count_less_than')
+                            ->label('Kategori Item Kurang dari')
+                            ->numeric()
+                            ->integer()
+                            ->minValue(0),
+
+                        Forms\Components\TextInput::make('items_count_more_than')
+                            ->label('Kategori Item Lebih dari')
+                            ->numeric()
+                            ->integer()
+                            ->minValue(0),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['items_count_less_than'],
+                                fn(Builder $query, $items_count) => $query->where('items_count', '<', $items_count),
+                            )
+                            ->when(
+                                $data['items_count_more_than'],
+                                fn(Builder $query, $items_count) => $query->where('items_count', '>', $items_count),
+                            );
+                    }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make('View Category')
+                        ->label('Lihat')
+                        ->icon('heroicon-o-eye')
+                        ->modalHeading(fn($record) => $record->name)
+                        ->modalWidth('2xl')
+                        ->modalContent(fn($record) => view('filament.custom.category-items', [
+                            'name' => $record->name,
+                            'slug' => $record->slug,
+                            'color' => $record->color,
+                            'items' => \App\Models\Item::where('category_id', $record->id)->get(),
+                        ]))
+                        ->form([]),
+                    Tables\Actions\EditAction::make()
+                        ->label('Ubah'),
+                    Tables\Actions\DeleteAction::make()
+                        ->label('Hapus')
+                        ->requiresConfirmation()
+                        ->modalHeading('Hapus Kategori')
+                        ->modalDescription('Apakah Anda yakin ingin menghapus kategori ini? Semua alat yang terkait dengan kategori ini akan kehilangan kategorinya.'),
+                ])->label('Aksi')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

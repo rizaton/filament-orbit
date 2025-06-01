@@ -3,12 +3,25 @@
 namespace Database\Seeders;
 
 use App\Models\Item;
+
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class ItemSeeder extends Seeder
 {
+    /**
+     * Parse image from the database path and return it as a base64 encoded string.
+     *
+     * @param string $path
+     * @return string
+     */
+    private function parseImage(string $path): string
+    {
+        return base64_encode(File::get(database_path('seeders/assets/' . $path)));
+    }
+
     /**
      * Run the database seeds.
      */
@@ -112,7 +125,7 @@ class ItemSeeder extends Seeder
             'category_id' => 3,
             'description' => 'Satu set peralatan masak ringkas untuk outdoor, model DS 308. Terdiri dari panci, wajan, dan aksesoris lainnya.',
             'is_available' => true,
-            'image' => null,
+            'image' => $this->parseImage('perlengkapan-masak/DS_308.jpeg'),
             'rent_price' => 10000,
         ]);
 

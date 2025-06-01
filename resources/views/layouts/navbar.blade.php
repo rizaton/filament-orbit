@@ -5,7 +5,7 @@
             <div class="flex items-center space-x-8">
                 <div class="shrink-0">
                     <a href="/" title="" class="">
-                        Image Logo
+                        <img src="/assets/images/logo.svg" alt="Logo" class="h-8 sm:h-10">
                     </a>
                 </div>
 

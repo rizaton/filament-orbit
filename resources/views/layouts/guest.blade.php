@@ -17,8 +17,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans text-gray-900 antialiased">
-    <div class="min-h-screen bg-gray-100">
+<body class="font-sans text-gray-900 dark:bg-gray-900 antialiased">
+    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
         @include('layouts.navbar')
         <main>
             {{ $slot }}
@@ -32,10 +32,10 @@
         x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 translate-y-4" x-cloak
         x-on:add-to-cart.window="
-                name = $event.detail.name;
-                show = true;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => show = false, 2500);"
+                    name = $event.detail.name;
+                    show = true;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => show = false, 2500);"
         class="fixed bottom-5 right-5 z-50 bg-green-600 text-white px-4 py-2 rounded shadow-md text-sm">
         <span x-text="`1 Item ${name} berhasil ditambahkan ke keranjang.`"></span>
     </div>

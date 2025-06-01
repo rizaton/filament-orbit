@@ -41,6 +41,7 @@ class ItemResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nama Alat')
                     ->live(onBlur: true)
                     ->unique(Item::class, 'name', ignoreRecord: true)
                     ->required()
@@ -51,22 +52,29 @@ class ItemResource extends Resource
                         }
                         $set('slug', Str::slug($state));
                     }),
+                Forms\Components\Textarea::make('description')
+                    ->label('Deskripsi Alat')
+                    ->required()
+                    ->columnSpanFull(),
                 Forms\Components\TextInput::make('slug')
                     ->required()
                     ->maxLength(255)
                     ->unique(Item::class, 'slug', ignoreRecord: true)
-                    ->label('Category Slug')
+                    ->label('Slug Alat')
                     ->dehydrateStateUsing(fn(string $state): string => md5($state)),
                 Forms\Components\TextInput::make('stock')
+                    ->label('Stok')
                     ->required()
+                    ->integer()
                     ->maxLength(4)
                     ->numeric(),
                 Forms\Components\Select::make('category_id')
-                    ->label('Category')
+                    ->label('Kategori')
                     ->relationship('category', 'name')
                     ->preload()
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')
+                            ->label('Nama Kategori')
                             ->live(onBlur: true)
                             ->unique(Category::class, 'name', ignoreRecord: true)
                             ->required()
@@ -90,12 +98,15 @@ class ItemResource extends Resource
                     ])
                     ->required(),
                 Forms\Components\Toggle::make('is_available')
+                    ->label('Tersedia')
                     ->required(),
                 Forms\Components\TextInput::make('rent_price')
+                    ->label('Harga Sewa')
                     ->maxLength(15)
                     ->required()
                     ->numeric(),
                 Forms\Components\FileUpload::make('image')
+                    ->label('Gambar')
                     ->image(),
             ]);
     }
@@ -130,24 +141,112 @@ class ItemResource extends Resource
                     ->label('Gambar')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Diubah Pada')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->extremePaginationLinks()
             ->filters([
-                Tables\Filters\Filter::make('available')
-                    ->label('Tersedia')
-                    ->query(fn(Builder $query): Builder => $query->where('is_available', true)),
+                Tables\Filters\SelectFilter::make('is_available')
+                    ->options([
+                        '1' => 'Tersedia',
+                        '0' => 'Tidak Tersedia',
+                    ])
+                    ->label('Ketersediaan'),
+
+                Tables\Filters\SelectFilter::make('category')
+                    ->label('Kategori')
+                    ->relationship('category', 'name'),
+
+                Tables\Filters\Filter::make('stock')
+                    ->form([
+                        Forms\Components\TextInput::make('stock_less_than')
+                            ->label('Stok Kurang dari')
+                            ->numeric()
+                            ->integer()
+                            ->minValue(0),
+
+                        Forms\Components\TextInput::make('stock_more_than')
+                            ->label('Stok Lebih dari')
+                            ->numeric()
+                            ->integer()
+                            ->minValue(0),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['stock_less_than'],
+                                fn(Builder $query, $stock) => $query->where('stock', '<', $stock),
+                            )
+                            ->when(
+                                $data['stock_more_than'],
+                                fn(Builder $query, $stock) => $query->where('stock', '>', $stock),
+                            );
+                    }),
+                Tables\Filters\Filter::make('rent_price')
+                    ->form([
+                        Forms\Components\TextInput::make('rent_price_less_than')
+                            ->label('Harga sewa Kurang dari')
+                            ->numeric()
+                            ->integer()
+                            ->minValue(0),
+
+                        Forms\Components\TextInput::make('rent_price_more_than')
+                            ->label('Harga sewa Lebih dari')
+                            ->numeric()
+                            ->integer()
+                            ->minValue(0),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['rent_price_less_than'],
+                                fn(Builder $query, $rent_price) => $query->where('rent_price', '<', $rent_price),
+                            )
+                            ->when(
+                                $data['rent_price_more_than'],
+                                fn(Builder $query, $rent_price) => $query->where('rent_price', '>', $rent_price),
+                            );
+                    }),
             ])
+            ->filtersFormColumns(3)
+            ->filtersFormSchema(fn(array $filters): array => [
+                Forms\Components\Grid::make()->columns(3)
+                    ->schema([
+                        Forms\Components\Grid::make(1)
+                            ->schema([
+                                $filters['is_available'],
+                                $filters['category'],
+                            ])->columnSpan(1),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                $filters['stock'],
+                                $filters['rent_price'],
+                            ])->columnSpan(2)
+                    ])
+            ])
+
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make()
+                        ->label('Lihat')
+                        ->modalHeading(fn($record) => "Detail Alat: {$record->name}")
+                        ->modalContent(fn($record) => view('filament.custom.item-details', [
+                            'record' => $record,
+                        ]))
+                        ->form([]),
+
+                    Tables\Actions\EditAction::make()
+                        ->label('Ubah'),
+                    Tables\Actions\DeleteAction::make()
+                        ->label('Hapus'),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -155,7 +254,7 @@ class ItemResource extends Resource
                 ]),
             ])
             ->emptyStateHeading('Tidak ada alat yang ditemukan')
-            ->emptyStateDescription('Silakan buat alat baru untuk memulai.')
+            ->emptyStateDescription('Silahkan buat alat baru untuk memulai.')
             ->emptyStateIcon('heroicon-o-cube')
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),

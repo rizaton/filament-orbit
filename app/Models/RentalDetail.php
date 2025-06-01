@@ -2,10 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Item;
+use App\Models\Rental;
+
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 
 class RentalDetail extends Model
 {
@@ -66,5 +71,56 @@ class RentalDetail extends Model
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class);
+    }
+
+    /**
+     * method "booted" untuk menangani event model.
+     * 
+     * @return void
+     * @see \Illuminate\Database\Eloquent\Model::booted()
+     * @see \Illuminate\Database\Eloquent\Model::updating()
+     * @see \Illuminate\Database\Eloquent\Model::updated()
+     */
+    protected static function booted()
+    {
+        static::updating(function (RentalDetail $rentalDetail) {
+
+            // Jika quantity berubah, hitung ulang sub_total
+            // dan update total_fees pada rental terkait
+            // serta down_payment berdasarkan total_fees
+
+            if ($rentalDetail->isDirty('quantity')) {
+                $previousSubTotal = $rentalDetail->getOriginal('sub_total');
+
+                $rentalDetail->loadMissing('item');
+                $price = (float) $rentalDetail->item->rent_price;
+                $qty = (int) $rentalDetail->quantity;
+
+                if ($price <= 0) {
+                    throw new \InvalidArgumentException('Harga item tidak boleh kurang dari atau sama dengan nol.');
+                }
+
+                if ($qty <= 0) {
+                    throw new \InvalidArgumentException('Jumlah sewa tidak boleh kurang dari atau sama dengan nol.');
+                }
+
+                DB::transaction(function () use ($rentalDetail, $qty, $price, $previousSubTotal) {
+                    $rentalDetail->sub_total = $qty * $price;
+
+                    $rental = $rentalDetail->rental;
+                    $rental->total_fees += $rentalDetail->sub_total - $previousSubTotal;
+
+                    $rental->down_payment = self::calculateDownPayment($rental->total_fees);
+                    $rental->save();
+                });
+            }
+        });
+    }
+
+    protected static function calculateDownPayment(float $totalFees): float
+    {
+        return $totalFees > 2000000
+            ? $totalFees * 0.5
+            : $totalFees * 0.25;
     }
 }
