@@ -82,7 +82,7 @@ class Rental extends Model
             foreach ($rental->rentalDetails as $detail) {
                 $item = $detail->item;
 
-                if (!$item) {
+                if (!$item || $detail->is_returned) {
                     continue;
                 }
 
@@ -91,9 +91,13 @@ class Rental extends Model
                         $item->decrement('stock', $detail->quantity);
                         $item->update(['is_available' => $item->stock > 0]);
                     }
-                } elseif ($rental->status === 'returned') {
+                } elseif ($rental->status === 'returned' && !$detail->is_returned) {
                     $item->increment('stock', $detail->quantity);
                     RentalDetail::where('rental_id', $rental->id)->update(['is_returned' => true]);
+                } elseif ($rental->isDirty('status') && $rental->status === 'pending' && $rental->original('status') === 'approved') {
+                    $item->increment('stock', $detail->quantity);
+                    $item->update(['is_available' => true]);
+                    RentalDetail::where('rental_id', $rental->id)->update(['is_returned' => false]);
                 }
             }
         });

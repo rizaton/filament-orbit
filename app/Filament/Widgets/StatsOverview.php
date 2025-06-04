@@ -4,18 +4,18 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Model;
 
 class StatsOverview extends BaseWidget
 {
-    private $models = [
-        'rental' => \App\Models\Rental::class,
-        'item' => \App\Models\Item::class,
-        'category' => \App\Models\Category::class,
-    ];
-
-    protected ?string $heading = 'Statistik';
-
-    protected ?string $description = 'Statistik penyewaan dan inventori';
+    private static function statModels(string $model): Model
+    {
+        $models = [
+            'rental' => \App\Models\Rental::class,
+            'item' => \App\Models\Item::class,
+        ];
+        return new $models[$model];
+    }
 
     protected static bool $isLazy = true;
 
@@ -24,23 +24,18 @@ class StatsOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Penyewaan belum diproses', $this->models['rental']::where('status', 'pending')->count())
+            Stat::make('Penyewaan belum diproses', self::statModels('rental')::where('status', 'pending')->count())
                 ->description('Penyewaan')
-                ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('warning'),
-            // ->color('success'),
-            Stat::make('Penyewaan Berlangsung', $this->models['rental']::where('status', 'approved')->count())
+            Stat::make('Penyewaan Berlangsung', self::statModels('rental')::where('status', 'approved')->count())
                 ->description('Berlangsung')
-                ->descriptionIcon('heroicon-m-arrow-trending-down')
                 ->color('success'),
-            // ->color('danger'),
-            Stat::make('Alat yang tidak tersedia', $this->models['item']::where([
+            Stat::make('Alat yang tidak tersedia', self::statModels('item')::where([
                 ['stock', '<=', 0],
                 ['is_available', true],
             ])->count())
-                ->description('3% increase')
-                ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->color('success'),
+                ->description('Tidak Tersedia dari ' . self::statModels('item')::count() . ' Alat')
+                ->color('danger'),
         ];
     }
 }

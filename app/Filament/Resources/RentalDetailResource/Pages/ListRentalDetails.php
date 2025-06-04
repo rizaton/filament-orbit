@@ -13,7 +13,11 @@ class ListRentalDetails extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Tambah Detail Penyewaan')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->tooltip('Tambah detail penyewaan baru'),
         ];
     }
 }

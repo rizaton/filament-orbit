@@ -2,23 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\Item;
-use App\Models\Category;
-use App\Filament\Resources\ItemResource\Pages;
-use App\Filament\Resources\ItemResource\RelationManagers;
-
 use Filament\Forms;
+use App\Models\Item;
 use Filament\Tables;
 use Filament\Forms\Get;
+
 use Filament\Forms\Set;
+use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Actions\Action;
 use Filament\Resources\Resource;
-
-use Illuminate\Support\Str;
+use App\Filament\Exports\ItemExporter;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ItemResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ItemResource\RelationManagers;
 
 class ItemResource extends Resource
 {
@@ -114,6 +114,14 @@ class ItemResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Tables\Actions\ExportAction::make()
+                    ->exporter(ItemExporter::class)
+                    ->label('Ekspor Alat')
+                    ->fileName('items_export_' . now()->format('Y_m_d_H_i_s'))
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable()

@@ -2,18 +2,26 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\RentalDetail;
-use App\Filament\Resources\RentalDetailResource\Pages;
-use App\Filament\Resources\RentalDetailResource\RelationManagers;
-
 use Filament\Forms;
+use App\Models\Item;
+use App\Models\User;
+
 use Filament\Tables;
+use App\Models\Rental;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use App\Models\Category;
+
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use App\Models\RentalDetail;
 use Filament\Resources\Resource;
-
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Exports\RentalDetailExporter;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\RentalDetailResource\Pages;
+use App\Filament\Resources\RentalDetailResource\RelationManagers;
 
 class RentalDetailResource extends Resource
 {
@@ -36,17 +44,67 @@ class RentalDetailResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('rental_id')
-                    ->relationship('rental', 'name')
+                    ->label('ID Sewa')
+                    ->placeholder('Pilih Sewa')
+                    ->options(Rental::all()->pluck('name', 'id'))
+                    ->searchable()
+                    ->required()
+                    ->preload()
                     ->required(),
                 Forms\Components\Select::make('item_id')
-                    ->relationship('item', 'name')
+                    ->label('ID Alat')
+                    ->placeholder('Pilih Alat')
+                    ->searchable()
+                    ->options(Item::all()->pluck('name', 'id'))
+                    ->afterStateUpdated(function (Get $get, Set $set) {
+                        if ($get('item_id') ?? '') {
+                            return;
+                        }
+                        $item = Item::find($get('item_id')) ?? null;
+                        $quantity = $get('quantity') ?? null;
+                        if (!$item) {
+                            return;
+                        }
+                        if (!$get('quantity')) {
+                            return;
+                        }
+                        $sub_total = (int) $get('quantity') * (int) $item->rent_price;
+                        $set('sub_total', $sub_total);
+                    })
                     ->required(),
                 Forms\Components\TextInput::make('quantity')
+                    ->label('Jumlah Alat')
+                    ->placeholder('Masukkan jumlah alat yang disewa')
+                    ->helperText('Jumlah alat yang disewa harus diisi dengan benar')
+                    ->maxLength(4)
                     ->required()
+                    ->integer()
+                    ->minValue(1)
+                    ->afterStateUpdated(function (Get $get, Set $set) {
+                        if ($get('item_id') ?? '') {
+                            return;
+                        }
+                        $item = Item::find((int)$get('item_id')) ?? null;
+                        dd($get('item_id'), $item);
+                        if (!$item) {
+                            return;
+                        }
+                        if (!$get('quantity')) {
+                            return;
+                        }
+                        $sub_total = (int) $get('quantity') * (int) $item->rent_price;
+                        $set('sub_total', $sub_total);
+                    })
                     ->numeric(),
                 Forms\Components\Toggle::make('is_returned')
+                    ->label('Sudah Dikembalikan')
+                    ->helperText('Tandai jika alat sudah dikembalikan oleh penyewa')
                     ->required(),
                 Forms\Components\TextInput::make('sub_total')
+                    ->label('Sub Total')
+                    ->placeholder('Sub total akan dihitung otomatis')
+                    ->helperText('Sub total akan dihitung secara otomatis berdasarkan jumlah alat yang disewa dan harga sewa per alat.')
+                    ->maxLength(15)
                     ->required()
                     ->numeric()
                     ->readOnly(true),
@@ -56,6 +114,14 @@ class RentalDetailResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Tables\Actions\ExportAction::make()
+                    ->exporter(RentalDetailExporter::class)
+                    ->label('Ekspor Detail Sewa')
+                    ->fileName('rental_details_export_' . now()->format('Y_m_d_H_i_s'))
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('rental_id')
                     ->label('ID Sewa')
@@ -153,22 +219,22 @@ class RentalDetailResource extends Resource
                     ->form([
                         Forms\Components\Select::make('category_id')
                             ->label('Kategori')
+                            ->placeholder('Pilih Kategori')
                             ->options(\App\Models\Category::pluck('name', 'id'))
                             ->reactive()
                             ->afterStateUpdated(fn(callable $set) => $set('item_id', null)),
-
                         Forms\Components\Select::make('item_id')
                             ->label('Alat')
+                            ->placeholder('Pilih Alat')
                             ->options(function (callable $get) {
                                 $categoryId = $get('category_id');
                                 if (!$categoryId) {
                                     return [];
                                 }
-
                                 return \App\Models\Item::where('category_id', $categoryId)
                                     ->pluck('name', 'id');
                             })
-                            ->searchable()
+                            ->searchable()->searchPrompt('Cari Alat')
                             ->disabled(fn(callable $get) => !$get('category_id')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -226,6 +292,14 @@ class RentalDetailResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make()
+                        ->label('Lihat Detail Sewa')
+                        ->modalHeading(fn($record) => "Detail Sewa #{$record->id}")
+                        ->modalContent(fn($record) => view('filament.custom.rental-detail', [
+                            'record' => $record,
+                        ]))
+                        ->form([]),
+
                     Tables\Actions\EditAction::make()
                         ->label('Ubah Detail Sewa'),
                     Tables\Actions\DeleteAction::make()

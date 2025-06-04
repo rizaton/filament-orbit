@@ -14,7 +14,10 @@ class ListCategories extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Kategori Alat'),
+                ->label('Tambah Kategori Alat')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->tooltip('Tambah kategori alat baru'),
         ];
     }
 }

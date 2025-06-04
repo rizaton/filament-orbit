@@ -18,4 +18,14 @@ class EditCategory extends EditRecord
     {
         return 'Kategori berhasil diperbarui';
     }
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\DeleteAction::make()
+                ->label('Hapus Kategori')
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->tooltip('Hapus kategori ini'),
+        ];
+    }
 }

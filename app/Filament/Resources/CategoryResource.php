@@ -2,21 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\Category;
-use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
-
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Get;
+
 use Filament\Forms\Set;
+use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Filament\Resources\Resource;
-
 use Illuminate\Support\Str;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+
+use App\Filament\Exports\CategoryExporter;
+use App\Filament\Resources\CategoryResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\CategoryResource\RelationManagers;
 
 
 class CategoryResource extends Resource
@@ -66,6 +67,14 @@ class CategoryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Tables\Actions\ExportAction::make()
+                    ->exporter(CategoryExporter::class)
+                    ->label('Ekspor Kategori')
+                    ->fileName('category_export_' . now()->format('Y_m_d_H_i_s'))
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Kategori')

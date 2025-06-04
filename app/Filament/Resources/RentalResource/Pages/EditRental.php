@@ -13,7 +13,19 @@ class EditRental extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label('Hapus Penyewaan')
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->tooltip('Hapus penyewaan ini'),
         ];
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+    protected function getCreatedNotificationTitle(): ?string
+    {
+        return 'Penyewaan berhasil diperbarui';
     }
 }

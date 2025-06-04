@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\RentalResource\RelationManagers;
 use PhpParser\Node\Stmt\Label;
 
+use App\Filament\Exports\RentalExporter;
+
 class RentalResource extends Resource
 {
     protected static ?string $model = Rental::class;
@@ -80,12 +82,17 @@ class RentalResource extends Resource
                     ])
                     ->required(),
                 Forms\Components\TextInput::make('down_payment')
+                    ->label('DP')
                     ->maxLength(15)
                     ->required()
                     ->numeric(),
                 Forms\Components\DatePicker::make('rent_date')
+                    ->minDate(now())
+                    ->label('Tanggal Sewa')
                     ->required(),
                 Forms\Components\DatePicker::make('return_date')
+                    ->label('Tanggal Kembali')
+                    ->minDate(now())
                     ->required(),
                 Forms\Components\DatePicker::make('late_date')
                     ->minDate(now())
@@ -93,9 +100,16 @@ class RentalResource extends Resource
                     ->helperText('Tanggal keterlambatan hanya diisi jika status penyewaan adalah "Late"')
                     ->nullable(),
                 Forms\Components\TextInput::make('late_fees')
+                    ->disabled()
+                    ->label('Denda Terlambat')
+                    ->placeholder('Denda Terlambat')
+                    ->helperText('Denda akan dihitung otomatis berdasarkan tanggal keterlambatan')
                     ->maxLength(15)
                     ->numeric(),
                 Forms\Components\TextInput::make('total_fees')
+                    ->label('Total Pembayaran')
+                    ->placeholder('Total Pembayaran')
+                    ->helperText('Total pembayaran akan dihitung otomatis berdasarkan DP dan denda keterlambatan')
                     ->disabled()
                     ->maxLength(15)
                     ->numeric(),
@@ -105,6 +119,14 @@ class RentalResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Tables\Actions\ExportAction::make()
+                    ->exporter(RentalExporter::class)
+                    ->label('Ekspor Data Penyewaan')
+                    ->fileName('rentals_export_' . now()->format('Y_m_d_H_i_s'))
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID Sewa')
@@ -377,6 +399,7 @@ class RentalResource extends Resource
     {
         return [
             'index' => Pages\ListRentals::route('/'),
+            'create' => Pages\CreateRental::route('/create'),
             'edit' => Pages\EditRental::route('/{record}/edit'),
         ];
     }

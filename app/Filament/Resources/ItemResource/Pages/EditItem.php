@@ -18,4 +18,14 @@ class EditItem extends EditRecord
     {
         return 'Alat berhasil diperbarui';
     }
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\DeleteAction::make()
+                ->label('Hapus Alat')
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->tooltip('Hapus alat ini'),
+        ];
+    }
 }

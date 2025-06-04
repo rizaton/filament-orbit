@@ -2,18 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\Message;
-use App\Filament\Resources\MessageResource\Pages;
-use App\Filament\Resources\MessageResource\RelationManagers;
-
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Message;
+
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-
+use App\Filament\Exports\MessageExporter;
 use Illuminate\Database\Eloquent\Builder;
+
+use App\Filament\Resources\MessageResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\MessageResource\RelationManagers;
 
 class MessageResource extends Resource
 {
@@ -31,6 +32,10 @@ class MessageResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->headerActions([
+                Tables\Actions\ExportAction::make()
+                    ->exporter(MessageExporter::class)
+            ])
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
@@ -51,6 +56,14 @@ class MessageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Tables\Actions\ExportAction::make()
+                    ->exporter(MessageExporter::class)
+                    ->label('Ekspor Pesan')
+                    ->fileName('messages_export_' . now()->format('Y_m_d_H_i_s'))
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
@@ -98,7 +111,6 @@ class MessageResource extends Resource
                     ->modalContent(fn($record) => view('filament.custom.message-details', [
                         'record' => $record,
                     ]))->form([]),
-
             ])
             ->emptyStateHeading('Tidak ada pesan yang ditemukan')
             ->emptyStateDescription('Saat ini tidak ada pesan yang tersedia.')
