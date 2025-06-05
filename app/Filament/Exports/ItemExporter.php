@@ -23,9 +23,9 @@ class ItemExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('id')
-                ->label('ID'),
-            ExportColumn::make('category_id')
+            ExportColumn::make('id_item')
+                ->label('ID Alat'),
+            ExportColumn::make('id_category')
                 ->label('ID Kategori'),
             ExportColumn::make('category.name')
                 ->label('Nama Kategori'),

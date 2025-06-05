@@ -120,7 +120,7 @@ class CheckoutController extends Controller
             ]);
         }
         if ($status) {
-            $pesan = "Halo, orbit outdoor\n\n";
+            $pesan = "Halo, Orbit Outdoor\n\n";
             $pesan .= "Saya ingin melakukan pemesanan rental berikut:\n";
             $pesan .= "Nama: $fullName\n";
             $pesan .= "Alamat: $address\n";

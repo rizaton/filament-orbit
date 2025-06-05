@@ -1,3 +1,6 @@
+<script>
+    window.images = @json($items);
+</script>
 <x-guest-layout>
     <section class="py-8 antialiased dark:bg-gray-900 md:py-16">
         <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
@@ -8,6 +11,26 @@
                 total: 0,
                 loadCart() {
                     this.cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                    if (this.cart.length > 0) {
+                        this.cart = this.cart.map(item => {
+                            const itemData = window.images.find(i => i.slug === item[0]);
+                            if (itemData) {
+                                return [
+                                    item[0], // slug
+                                    item[1], // qty
+                                    item[2], // name
+                                    Number(itemData.rent_price), // sewa price
+                                    Number(itemData.stock), // stock
+                                    item[5], // sewa total
+                                    itemData.image ?
+                                    'data:image/png;base64,' + itemData.image : null,
+                                ];
+                            }
+                            return item;
+                        });
+                    } else {
+                        this.cart = [];
+                    }
                 },
                 saveCart() {
                     localStorage.setItem('cart', JSON.stringify(this.cart));
@@ -58,14 +81,19 @@
                             <div
                                 class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6 mb-4">
                                 <div class="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
-                                    <a href="#" class="shrink-0 md:order-1">
-                                        <img class="h-20 w-20 dark:hidden"
-                                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg"
-                                            alt="imac image" />
-                                        <img class="hidden h-20 w-20 dark:block"
-                                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
-                                            alt="imac image" />
-                                    </a>
+                                    <div class="shrink-0 md:order-1">
+                                        <template x-if="!item[6]">
+                                            <img class="h-20 w-20 dark:hidden"
+                                                src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg"
+                                                alt="item image" />
+                                            <img class="hidden h-20 w-20 dark:block"
+                                                src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
+                                                alt="item image" />
+                                        </template>
+                                        <template x-if="item[6]">
+                                            <img :src="item[6]" :alt="item[0]" class="h-20 w-20">
+                                        </template>
+                                    </div>
                                     <div class="flex items-center justify-between md:order-3 md:justify-end">
                                         <div class="flex items-center">
                                             <button type="button" x-data

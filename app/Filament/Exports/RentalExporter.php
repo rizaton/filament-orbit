@@ -24,8 +24,8 @@ class RentalExporter extends Exporter
     {
         return [
             ExportColumn::make('id')
-                ->label('ID'),
-            ExportColumn::make('performed_by')
+                ->label('ID Sewa'),
+            ExportColumn::make('id_user.name')
                 ->label('Dikerjakan Oleh'),
             ExportColumn::make('name')
                 ->label('Nama Penyewa'),

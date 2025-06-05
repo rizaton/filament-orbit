@@ -2,28 +2,23 @@
 
 namespace App\Filament\Resources;
 
+use App\Models\Message;
+use App\Filament\Exports\MessageExporter;
+use App\Filament\Resources\MessageResource\Pages;
+
 use Filament\Forms;
 use Filament\Tables;
-use App\Models\Message;
-
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use App\Filament\Exports\MessageExporter;
-use Illuminate\Database\Eloquent\Builder;
 
-use App\Filament\Resources\MessageResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\MessageResource\RelationManagers;
+use Illuminate\Database\Eloquent\Builder;
 
 class MessageResource extends Resource
 {
     protected static ?string $model = Message::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left';
-
     protected static ?int $navigationSort = 5;
-
     protected static ?string $navigationLabel = 'Pesan';
     protected static ?string $pluralModelLabel = 'List Pesan';
     protected static ?string $modelLabel = 'Pesan';
@@ -52,7 +47,6 @@ class MessageResource extends Resource
                     ->columnSpanFull(),
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -116,14 +110,6 @@ class MessageResource extends Resource
             ->emptyStateDescription('Saat ini tidak ada pesan yang tersedia.')
             ->emptyStateIcon('heroicon-o-chat-bubble-left');
     }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [

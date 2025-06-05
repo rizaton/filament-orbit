@@ -23,10 +23,12 @@ class RentalDetailExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('id')
-                ->label('ID'),
+            ExportColumn::make('rental.id_rental')
+                ->label('ID Sewa'),
             ExportColumn::make('rental.name')
                 ->label('Nama Penyewa'),
+            ExportColumn::make('item.id_item')
+                ->label('ID Alat'),
             ExportColumn::make('item.name')
                 ->label('Nama Alat'),
             ExportColumn::make('quantity')

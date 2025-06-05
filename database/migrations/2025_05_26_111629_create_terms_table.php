@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('terms', function (Blueprint $table) {
-            $table->id();
+            $table->id('id_term');
             $table->string('slug');
             $table->string('name');
-            $table->text('description')->nullable();
+            $table->text('content')->nullable();
             $table->timestamps();
         });
     }

@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rules', function (Blueprint $table) {
-            $table->id();
+            $table->id('id_rule');
             $table->string('slug');
             $table->string('name');
-            $table->text('description')->nullable();
+            $table->text('content')->nullable();
             $table->timestamps();
         });
     }

@@ -62,9 +62,7 @@
             <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
                 <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
                     @if ($item->image)
-                        <img class="mx-auto h-full dark:hidden" src="data:image/png;base64,{{ $item->image }}"
-                            alt="image-{{ $item->slug }}">
-                        <img class="mx-auto hidden h-full dark:block" src="data:image/png;base64,{{ $item->image }}"
+                        <img class="mx-auto h-full" src="data:image/png;base64,{{ $item->image }}"
                             alt="image-{{ $item->slug }}">
                     @else
                         <img class="w-full dark:hidden"
@@ -84,7 +82,6 @@
                             Rp.{{ number_format($item->rent_price) }}/hari
                         </p>
                     </div>
-
                     <div class="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-8">
                         <button type="button" x-data
                             @click="
@@ -122,10 +119,7 @@
                             Tambah ke keranjang
                         </button>
                     </div>
-
-
                     <hr class="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
-
                     <p class="mb-6 text-gray-500 dark:text-gray-400">
                         {{ $item->description }}
                     </p>

@@ -28,6 +28,8 @@ class Item extends Model
         'image',
     ];
 
+    protected $primaryKey = 'id_item';
+
     /**
      * Relasi dengan model Category.
      *

@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rentals', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('performed_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->id('id_rental');
+            $table->foreignId('id_user')->nullable()->constrained(
+                table: 'users',
+                column: 'id_user'
+            )->nullOnDelete();
             $table->string('name');
             $table->string('address');
             $table->string('phone');

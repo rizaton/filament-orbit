@@ -4,36 +4,28 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use App\Models\Item;
-use App\Models\User;
+
+use App\Models\Rental;
+use App\Models\RentalDetail;
+use App\Filament\Exports\RentalDetailExporter;
+use App\Filament\Resources\RentalDetailResource\Pages;
 
 use Filament\Tables;
-use App\Models\Rental;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use App\Models\Category;
-
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use App\Models\RentalDetail;
 use Filament\Resources\Resource;
+
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Exports\RentalDetailExporter;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\RentalDetailResource\Pages;
-use App\Filament\Resources\RentalDetailResource\RelationManagers;
 
 class RentalDetailResource extends Resource
 {
     protected static ?string $model = RentalDetail::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-
     protected static ?int $navigationSort = 2;
-
     protected static ?string $navigationGroup = 'Penyewaan';
     protected static ?string $slug = 'rent/rental-details';
-
     protected static ?string $navigationLabel = 'List Detail Sewa';
     protected static ?string $pluralModelLabel = 'List Detail Sewa';
     protected static ?string $modelLabel = 'Detail Sewa';
@@ -43,29 +35,25 @@ class RentalDetailResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('rental_id')
+                Forms\Components\Select::make('id_rental')
                     ->label('ID Sewa')
                     ->placeholder('Pilih Sewa')
-                    ->options(Rental::all()->pluck('name', 'id'))
+                    ->options(Rental::all()->pluck('name', 'id_rental'))
                     ->searchable()
                     ->required()
                     ->preload()
                     ->required(),
-                Forms\Components\Select::make('item_id')
+                Forms\Components\Select::make('id_item')
                     ->label('ID Alat')
                     ->placeholder('Pilih Alat')
                     ->searchable()
-                    ->options(Item::all()->pluck('name', 'id'))
+                    ->options(Item::all()->pluck('name', 'id_item'))
                     ->afterStateUpdated(function (Get $get, Set $set) {
-                        if ($get('item_id') ?? '') {
+                        if ($get('id_item') ?? '' || !$get('quantity')) {
                             return;
                         }
-                        $item = Item::find($get('item_id')) ?? null;
-                        $quantity = $get('quantity') ?? null;
+                        $item = Item::find($get('id_item')) ?? null;
                         if (!$item) {
-                            return;
-                        }
-                        if (!$get('quantity')) {
                             return;
                         }
                         $sub_total = (int) $get('quantity') * (int) $item->rent_price;
@@ -81,15 +69,11 @@ class RentalDetailResource extends Resource
                     ->integer()
                     ->minValue(1)
                     ->afterStateUpdated(function (Get $get, Set $set) {
-                        if ($get('item_id') ?? '') {
+                        if ($get('id_item') ?? '' || !$get('quantity')) {
                             return;
                         }
-                        $item = Item::find((int)$get('item_id')) ?? null;
-                        dd($get('item_id'), $item);
+                        $item = Item::find((int)$get('id_item')) ?? null;
                         if (!$item) {
-                            return;
-                        }
-                        if (!$get('quantity')) {
                             return;
                         }
                         $sub_total = (int) $get('quantity') * (int) $item->rent_price;
@@ -123,22 +107,22 @@ class RentalDetailResource extends Resource
                     ->color('success')
             ])
             ->columns([
-                Tables\Columns\TextColumn::make('rental_id')
+                Tables\Columns\TextColumn::make('id_rental')
                     ->label('ID Sewa')
                     ->numeric()
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('rental.name')
-                    ->label('Nama Penyewa')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('item_id')
+                Tables\Columns\TextColumn::make('id_item')
                     ->label('ID Barang')
                     ->searchable()
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('rental.name')
+                    ->label('Nama Penyewa')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('item.name')
                     ->label('Nama Alat')
                     ->searchable()
@@ -200,9 +184,9 @@ class RentalDetailResource extends Resource
                                 fn(Builder $query, $quantity) => $query->where('quantity', '>', $quantity),
                             );
                     }),
-                Tables\Filters\Filter::make('rental_id')
+                Tables\Filters\Filter::make('id_rental')
                     ->form([
-                        Forms\Components\TextInput::make('rental_id')
+                        Forms\Components\TextInput::make('id_rental')
                             ->label('ID Penyewaan')
                             ->numeric()
                             ->placeholder('Masukkan ID penyewaan untuk filter')
@@ -211,37 +195,37 @@ class RentalDetailResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
-                            $data['rental_id'],
-                            fn(Builder $query, $id) => $query->where('rental_id', '=', $id),
+                            $data['id_rental'],
+                            fn(Builder $query, $id) => $query->where('id_rental', '=', $id),
                         );
                     }),
                 Tables\Filters\Filter::make('item_by_category')
                     ->form([
-                        Forms\Components\Select::make('category_id')
+                        Forms\Components\Select::make('id_category')
                             ->label('Kategori')
                             ->placeholder('Pilih Kategori')
-                            ->options(\App\Models\Category::pluck('name', 'id'))
+                            ->options(\App\Models\Category::pluck('name', 'id_category'))
                             ->reactive()
                             ->afterStateUpdated(fn(callable $set) => $set('item_id', null)),
-                        Forms\Components\Select::make('item_id')
+                        Forms\Components\Select::make('id_item')
                             ->label('Alat')
                             ->placeholder('Pilih Alat')
                             ->options(function (callable $get) {
-                                $categoryId = $get('category_id');
+                                $categoryId = $get('id_category');
                                 if (!$categoryId) {
                                     return [];
                                 }
-                                return \App\Models\Item::where('category_id', $categoryId)
-                                    ->pluck('name', 'id');
+                                return \App\Models\Item::where('id_category', $categoryId)
+                                    ->pluck('name', 'id_category');
                             })
                             ->searchable()->searchPrompt('Cari Alat')
-                            ->disabled(fn(callable $get) => !$get('category_id')),
+                            ->disabled(fn(callable $get) => !$get('id_category')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
-                                $data['item_id'],
-                                fn(Builder $query, $itemId) => $query->where('item_id', $itemId),
+                                $data['id_item'],
+                                fn(Builder $query, $idItem) => $query->where('id_item', $idItem),
                             );
                     }),
                 Tables\Filters\Filter::make('sub_total')
@@ -279,7 +263,7 @@ class RentalDetailResource extends Resource
                     ->schema([
                         Forms\Components\Grid::make(1)
                             ->schema([
-                                $filters['rental_id'],
+                                $filters['id_rental'],
                                 $filters['is_returned'],
                             ])->columnSpan(1),
                         Forms\Components\Grid::make(3)
@@ -316,14 +300,6 @@ class RentalDetailResource extends Resource
             ->emptyStateDescription('Saat ini tidak ada detail sewa yang tersedia.')
             ->emptyStateIcon('heroicon-o-document-text');
     }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [

@@ -2,34 +2,26 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use App\Models\User;
-use Filament\Tables;
-
 use App\Models\Rental;
+use App\Filament\Exports\RentalExporter;
+use App\Filament\Resources\RentalResource\Pages;
+
+use Filament\Forms;
+use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+
 use Illuminate\Database\Eloquent\Builder;
-
-use App\Filament\Resources\RentalResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\RentalResource\RelationManagers;
-use PhpParser\Node\Stmt\Label;
-
-use App\Filament\Exports\RentalExporter;
 
 class RentalResource extends Resource
 {
     protected static ?string $model = Rental::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
-
     protected static ?int $navigationSort = 1;
-
     protected static ?string $navigationGroup = 'Penyewaan';
     protected static ?string $slug = 'rent/rentals';
-
     protected static ?string $navigationLabel = 'List Penyewaan';
     protected static ?string $pluralModelLabel = 'List Penyewaan';
     protected static ?string $modelLabel = 'Penyewaan';
@@ -39,9 +31,9 @@ class RentalResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('performed_by')
-                    ->label('Performed By')
-                    ->options(User::all()->pluck('name', 'id'))
+                Forms\Components\Select::make('id_user')
+                    ->label('Dikelola oleh')
+                    ->options(User::all()->pluck('name', 'id_user'))
                     ->preload()
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')
@@ -115,7 +107,6 @@ class RentalResource extends Resource
                     ->numeric(),
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -128,7 +119,7 @@ class RentalResource extends Resource
                     ->color('success')
             ])
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                Tables\Columns\TextColumn::make('rental_id')
                     ->label('ID Sewa')
                     ->numeric()
                     ->sortable()
@@ -140,14 +131,14 @@ class RentalResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label('Nama Penyewa')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
-                    ->label('Alamat')
+                    ->label('Alamat Penyewa')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('phone')
-                    ->label('Nomor telepon')
+                    ->label('Nomor telepon Penyewa')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\SelectColumn::make('status')
@@ -263,7 +254,6 @@ class RentalResource extends Resource
                             ->numeric()
                             ->maxLength(15)
                             ->minValue(0),
-
                         Forms\Components\TextInput::make('down_payment_more_than')
                             ->label('Down Payment Lebih dari')
                             ->placeholder('contoh: 5000.00')
@@ -290,7 +280,6 @@ class RentalResource extends Resource
                             ->numeric()
                             ->maxLength(15)
                             ->minValue(0),
-
                         Forms\Components\TextInput::make('late_fees_more_than')
                             ->label('Denda terlambat Lebih dari')
                             ->placeholder('contoh: 5000.00')
@@ -317,7 +306,6 @@ class RentalResource extends Resource
                             ->numeric()
                             ->maxLength(15)
                             ->minValue(0),
-
                         Forms\Components\TextInput::make('total_fees_more_than')
                             ->label('Total Pembayaran Lebih dari')
                             ->placeholder('contoh: 5000.00')
@@ -362,11 +350,11 @@ class RentalResource extends Resource
                     Tables\Actions\ViewAction::make('Lihat Detail')
                         ->label('Lihat')
                         ->icon('heroicon-o-eye')
-                        ->modalHeading(fn($record) => 'Detail Peminjaman #' . $record->id . ' - ' . $record->name)
+                        ->modalHeading(fn($record) => 'Detail Peminjaman #' . $record->rental_id . ' - ' . $record->name)
                         ->modalWidth('2xl')
                         ->modalContent(fn($record) => view('filament.custom.rental-details', [
                             'rental' => $record,
-                            'details' => \App\Models\RentalDetail::where('rental_id', $record->id)
+                            'details' => \App\Models\RentalDetail::where('id_rental', $record->id_rental)
                                 ->with(['item'])
                                 ->get()
                         ]))
@@ -387,14 +375,6 @@ class RentalResource extends Resource
             ->emptyStateDescription('Saat ini tidak ada data penyewaan')
             ->emptyStateIcon('heroicon-o-briefcase');
     }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [

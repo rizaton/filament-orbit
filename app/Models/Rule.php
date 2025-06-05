@@ -17,6 +17,8 @@ class Rule extends Model
         'description'
     ];
 
+    protected $primaryKey = 'id_rule';
+
     /**
      * Atribut yang harus di-cast.
      *

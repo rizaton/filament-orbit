@@ -23,7 +23,7 @@ class MessageExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('id')
+            ExportColumn::make('id_message')
                 ->label('ID'),
             ExportColumn::make('name')
                 ->label('Nama Pengirim'),

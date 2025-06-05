@@ -2,35 +2,28 @@
 
 namespace App\Filament\Resources;
 
+use App\Models\Category;
+use App\Filament\Exports\CategoryExporter;
+use App\Filament\Resources\CategoryResource\Pages;
+
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Get;
-
 use Filament\Forms\Set;
-use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 use Filament\Resources\Resource;
+
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
-
-use App\Filament\Exports\CategoryExporter;
-use App\Filament\Resources\CategoryResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\CategoryResource\RelationManagers;
-
 
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
     protected static ?int $navigationSort = 3;
     protected static ?string $navigationGroup = 'Inventori';
-
     protected static ?string $slug = 'inventory/categories';
-
     protected static ?string $navigationLabel = 'Kategori';
     protected static ?string $pluralModelLabel = 'List Kategori';
     protected static ?string $modelLabel = 'Kategori';
@@ -63,7 +56,6 @@ class CategoryResource extends Resource
                     ->required(),
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -111,7 +103,6 @@ class CategoryResource extends Resource
                             ->numeric()
                             ->integer()
                             ->minValue(0),
-
                         Forms\Components\TextInput::make('items_count_more_than')
                             ->label('Kategori Item Lebih dari')
                             ->numeric()
@@ -141,7 +132,7 @@ class CategoryResource extends Resource
                             'name' => $record->name,
                             'slug' => $record->slug,
                             'color' => $record->color,
-                            'items' => \App\Models\Item::where('category_id', $record->id)->get(),
+                            'items' => \App\Models\Item::where('category_id', $record->id_category)->get(),
                         ]))
                         ->form([]),
                     Tables\Actions\EditAction::make()
@@ -168,14 +159,6 @@ class CategoryResource extends Resource
                     ->icon('heroicon-m-plus')
             ]);
     }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [

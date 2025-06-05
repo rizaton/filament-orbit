@@ -20,6 +20,8 @@ class Category extends Model
         'color',
     ];
 
+    protected $primaryKey = 'id_category';
+
     /**
      * Atribut yang harus di-cast.
      *

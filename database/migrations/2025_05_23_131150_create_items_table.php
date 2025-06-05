@@ -13,8 +13,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('items', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->id('id_item');
+            $table->foreignId('id_category')->constrained(
+                table: 'categories',
+                column: 'id_category'
+            )->onDelete('cascade');
             $table->string('name');
             $table->string('slug')->unique();
             $table->integer('stock');

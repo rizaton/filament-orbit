@@ -2,35 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use App\Models\Item;
+use App\Models\Category;
+use App\Filament\Exports\ItemExporter;
+use App\Filament\Resources\ItemResource\Pages;
+use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Get;
-
 use Filament\Forms\Set;
-use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use Filament\Actions\Action;
 use Filament\Resources\Resource;
-use App\Filament\Exports\ItemExporter;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\ItemResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ItemResource\RelationManagers;
 
 class ItemResource extends Resource
 {
     protected static ?string $model = Item::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-cube';
-
     protected static ?int $navigationSort = 4;
     protected static ?string $navigationGroup = 'Inventori';
-
     protected static ?string $slug = 'inventory/items';
-
     protected static ?string $navigationLabel = 'Alat';
     protected static ?string $pluralModelLabel = 'List Alat-alat';
     protected static ?string $modelLabel = 'Alat';
@@ -68,7 +60,7 @@ class ItemResource extends Resource
                     ->integer()
                     ->maxLength(4)
                     ->numeric(),
-                Forms\Components\Select::make('category_id')
+                Forms\Components\Select::make('id_category')
                     ->label('Kategori')
                     ->relationship('category', 'name')
                     ->preload()
@@ -110,7 +102,6 @@ class ItemResource extends Resource
                     ->image(),
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -167,11 +158,9 @@ class ItemResource extends Resource
                         '0' => 'Tidak Tersedia',
                     ])
                     ->label('Ketersediaan'),
-
                 Tables\Filters\SelectFilter::make('category')
                     ->label('Kategori')
                     ->relationship('category', 'name'),
-
                 Tables\Filters\Filter::make('stock')
                     ->form([
                         Forms\Components\TextInput::make('stock_less_than')
@@ -179,7 +168,6 @@ class ItemResource extends Resource
                             ->numeric()
                             ->integer()
                             ->minValue(0),
-
                         Forms\Components\TextInput::make('stock_more_than')
                             ->label('Stok Lebih dari')
                             ->numeric()
@@ -204,7 +192,6 @@ class ItemResource extends Resource
                             ->numeric()
                             ->integer()
                             ->minValue(0),
-
                         Forms\Components\TextInput::make('rent_price_more_than')
                             ->label('Harga sewa Lebih dari')
                             ->numeric()
@@ -239,7 +226,6 @@ class ItemResource extends Resource
                             ])->columnSpan(2)
                     ])
             ])
-
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make()
@@ -249,7 +235,6 @@ class ItemResource extends Resource
                             'record' => $record,
                         ]))
                         ->form([]),
-
                     Tables\Actions\EditAction::make()
                         ->label('Ubah'),
                     Tables\Actions\DeleteAction::make()
@@ -268,14 +253,6 @@ class ItemResource extends Resource
                 Tables\Actions\CreateAction::make(),
             ]);
     }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [

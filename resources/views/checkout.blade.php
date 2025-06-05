@@ -1,3 +1,6 @@
+<script>
+    window.images = @json($items);
+</script>
 <x-guest-layout>
     <div x-data="{
         cart: [],
@@ -24,6 +27,26 @@
         },
         loadCart() {
             this.cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            if (this.cart.length > 0) {
+                this.cart = this.cart.map(item => {
+                    const itemData = window.images.find(i => i.slug === item[0]);
+                    if (itemData) {
+                        return [
+                            item[0], // slug
+                            item[1], // qty
+                            item[2], // name
+                            Number(itemData.rent_price), // sewa price
+                            Number(itemData.stock), // stock
+                            item[5], // sewa total
+                            itemData.image ?
+                            'data:image/png;base64,' + itemData.image : null,
+                        ];
+                    }
+                    return item;
+                });
+            } else {
+                this.cart = [];
+            }
         },
         total() {
             return this.cart.reduce((sum, item) => sum + (item[3] || 0), 0);
@@ -121,12 +144,18 @@
                                             <td class="whitespace-nowrap py-4 md:w-[384px]">
                                                 <div class="flex items-center gap-4">
                                                     <div class="flex items-center aspect-square w-10 h-10 shrink-0">
-                                                        <img class="h-auto w-full max-h-full dark:hidden"
-                                                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg"
-                                                            alt="item image" />
-                                                        <img class="hidden h-auto w-full max-h-full dark:block"
-                                                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
-                                                            alt="item image" />
+                                                        <template x-if="!item[6]">
+                                                            <img class="h-auto w-full max-h-full dark:hidden"
+                                                                src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg"
+                                                                alt="item image" />
+                                                            <img class="hidden h-auto w-full max-h-full dark:block"
+                                                                src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
+                                                                alt="item image" />
+                                                        </template>
+                                                        <template x-if="item[6]">
+                                                            <img :src="item[6]" :alt="item[0]"
+                                                                class="h-auto w-full max-h-full">
+                                                        </template>
                                                     </div>
                                                     <span x-text="item[2]" class="hover:underline"></span>
                                                 </div>
@@ -394,7 +423,7 @@
                                     class="max-w-md sm:max-w-3xl space-y-1 text-gray-700 list-disc list-inside dark:text-gray-400">
                                     @foreach ($terms as $key => $term)
                                         <li class="text-justify">
-                                            {{ $term->description }}
+                                            {{ $term->content }}
                                         </li>
                                     @endforeach
                                 </ul>
@@ -448,7 +477,7 @@
                                     class="max-w-md sm:max-w-xl space-y-1 text-gray-700 list-disc list-inside dark:text-gray-400">
                                     @foreach ($terms as $key => $term)
                                         <li>
-                                            {{ $term->description }}
+                                            {{ $term->content }}
                                         </li>
                                     @endforeach
                                 </ul>

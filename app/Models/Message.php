@@ -19,6 +19,8 @@ class Message extends Model
         'message',
     ];
 
+    protected $primaryKey = 'id_message';
+
     /**
      * Atribut yang harus di-cast.
      *

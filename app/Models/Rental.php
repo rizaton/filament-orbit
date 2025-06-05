@@ -28,6 +28,8 @@ class Rental extends Model
         'total_fees'
     ];
 
+    protected $primaryKey = 'id_rental';
+
     /**
      * Atribut yang harus di-cast.
      *

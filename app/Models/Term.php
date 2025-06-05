@@ -17,6 +17,8 @@ class Term extends Model
         'description'
     ];
 
+    protected $primaryKey = 'id_term';
+
     /**
      * Atribut yang harus di-cast.
      *

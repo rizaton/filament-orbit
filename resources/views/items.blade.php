@@ -1,7 +1,6 @@
 <x-guest-layout>
     <section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
         <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
-            <!-- Heading & Filters -->
             <div class="mb-4 items-center justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
                 <div>
                     <nav class="flex" aria-label="Breadcrumb">
@@ -66,7 +65,6 @@
                                     <input type="hidden" name="category[]" value="{{ $category }}">
                                 @endforeach
                             @endif
-
                             <div class="items-center mx-auto mb-3 space-y-4 max-w-screen-sm sm:flex sm:space-y-0">
                                 <div class="relative w-full">
                                     <label for="search"
@@ -176,8 +174,8 @@
                     </div>
                 </div>
             </div>
-            <div class="mb-4 grid gap-4 grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4 overflow-auto">
-                {{-- Product Start --}}
+            {{ $items->links() }}
+            <div class="pt-10 mb-4 grid gap-4 grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4 overflow-auto">
                 @foreach ($items as $key => $item)
                     <div
                         class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -261,8 +259,8 @@
                         </div>
                     </div>
                 @endforeach
-                {{-- Product End --}}
             </div>
+            {{ $items->links() }}
         </div>
     </section>
 </x-guest-layout>
