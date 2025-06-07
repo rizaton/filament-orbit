@@ -18,7 +18,7 @@ class MessageResource extends Resource
 {
     protected static ?string $model = Message::class;
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left';
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 1;
     protected static ?string $navigationLabel = 'Pesan';
     protected static ?string $pluralModelLabel = 'List Pesan';
     protected static ?string $modelLabel = 'Pesan';
@@ -59,10 +59,10 @@ class MessageResource extends Resource
                     ->color('success')
             ])
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('user_id.name')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('email')
+                Tables\Columns\TextColumn::make('user_id.email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('subject')
                     ->searchable(),

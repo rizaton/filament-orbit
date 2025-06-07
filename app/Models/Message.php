@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Message extends Model
 {
@@ -13,8 +14,7 @@ class Message extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
+        'id_user',
         'subject',
         'message',
     ];
@@ -29,10 +29,15 @@ class Message extends Model
     protected function casts(): array
     {
         return [
-            'name' => 'string',
-            'email' => 'string',
+            'id_message' => 'integer',
+            'id_user' => 'integer',
             'subject' => 'string',
             'message' => 'string',
         ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'id_user');
     }
 }

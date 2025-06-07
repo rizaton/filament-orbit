@@ -15,7 +15,17 @@ return new class extends Migration
             $table->id('id_user');
             $table->string('name');
             $table->string('email')->unique();
-            $table->enum('role', ['user', 'admin'])->default('user');
+            $table->boolean('is_admin')->default(false);
+            $table->string('phone');
+            $table->string('address');
+            $table->enum('city', [
+                'Jakarta',
+                'Bogor',
+                'Depok',
+                'Tangerang',
+                'Bekasi',
+                'Luar Jabodetabek',
+            ])->default('jakarta');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
