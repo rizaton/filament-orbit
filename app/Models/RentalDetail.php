@@ -59,7 +59,7 @@ class RentalDetail extends Model
      */
     public function rental(): BelongsTo
     {
-        return $this->belongsTo(Rental::class);
+        return $this->belongsTo(Rental::class, 'id_rental');
     }
 
     /**
@@ -70,7 +70,7 @@ class RentalDetail extends Model
      */
     public function item(): BelongsTo
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsTo(Item::class, 'id_item');
     }
 
     /**

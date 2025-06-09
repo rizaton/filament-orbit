@@ -7,7 +7,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
+use App\Filament\Customer\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -18,6 +18,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+
+use App\Filament\Customer\Pages\Auth\EditProfile;
 
 
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
@@ -36,17 +38,13 @@ class CustomerPanelProvider extends PanelProvider
             ->login()
             ->passwordReset()
             ->registration(Register::class)
+            ->profile(EditProfile::class, isSimple: false)
             ->emailVerification()
             ->discoverResources(in: app_path('Filament/Customer/Resources'), for: 'App\\Filament\\Customer\\Resources')
             ->discoverPages(in: app_path('Filament/Customer/Pages'), for: 'App\\Filament\\Customer\\Pages')
             ->discoverWidgets(in: app_path('Filament/Customer/Widgets'), for: 'App\\Filament\\Customer\\Widgets')
-            ->pages([
-                Pages\Dashboard::class,
-            ])
-            ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
-            ])
+            ->pages([])
+            ->widgets([])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

@@ -45,6 +45,6 @@ class Category extends Model
      */
     public function items(): HasMany
     {
-        return $this->hasMany(Item::class);
+        return $this->hasMany(Item::class, 'id_category');
     }
 }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->boolean('is_admin')->default(false);
             $table->string('phone');
-            $table->string('address');
+            $table->text('address');
             $table->enum('city', [
                 'Jakarta',
                 'Bogor',
@@ -25,7 +25,7 @@ return new class extends Migration
                 'Tangerang',
                 'Bekasi',
                 'Luar Jabodetabek',
-            ])->default('jakarta');
+            ])->default('Luar Jabodetabek');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

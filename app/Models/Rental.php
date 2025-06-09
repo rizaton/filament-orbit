@@ -60,7 +60,7 @@ class Rental extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'id_user');
     }
 
     /**
@@ -71,7 +71,7 @@ class Rental extends Model
      */
     public function rentaldetails(): HasMany
     {
-        return $this->hasMany(RentalDetail::class);
+        return $this->hasMany(RentalDetail::class, 'id_rental');
     }
 
     protected static function booted()

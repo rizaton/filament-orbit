@@ -17,10 +17,10 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use App\Filament\Resources\RentalResource\Widgets\RentalChart;
-use App\Filament\Resources\ItemResource\Widgets\ItemChart;
+use App\Filament\Admin\Resources\RentalResource\Widgets\RentalChart;
+use App\Filament\Admin\Resources\ItemResource\Widgets\ItemChart;
 
-use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Admin\Pages\Auth\EditProfile;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -37,9 +37,9 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->sidebarCollapsibleOnDesktop()
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
+            ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
+            ->discoverWidgets(in: app_path('Filament/admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->pages([
                 Pages\Dashboard::class,
             ])
