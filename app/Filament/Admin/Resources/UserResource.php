@@ -143,6 +143,7 @@ class UserResource extends Resource
                     ->label('Filter Verifikasi Email')
                     ->form([
                         Forms\Components\Select::make('email_verified_at')
+                            ->label('Filter Verifikasi Email')
                             ->options([
                                 'verified' => 'Terverifikasi',
                                 'unverified' => 'Tidak Terverifikasi',
@@ -189,6 +190,14 @@ class UserResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->emptyStateHeading('Tidak ada pengguna yang ditemukan')
+            ->emptyStateDescription('Silakan buat pengguna baru atau periksa filter yang diterapkan.')
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('Buat Pengguna Baru')
+                    ->icon('heroicon-o-user-plus')
+                    ->color('primary'),
             ]);
     }
 

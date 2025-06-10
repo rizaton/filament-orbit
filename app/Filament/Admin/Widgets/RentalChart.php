@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Filament\Admin\Resources\RentalResource\Widgets;
+namespace App\Filament\Admin\Widgets;
 
 use App\Models\Rental;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class RentalChart extends ChartWidget
 {
@@ -29,7 +28,6 @@ class RentalChart extends ChartWidget
         $startOfYear = now()->startOfYear();
         $endOfYear = now()->endOfYear();
 
-        // Query rentals grouped by month
         $rentals = Rental::query()
             ->selectRaw('MONTH(rent_date) as month, COUNT(*) as total')
             ->whereBetween('rent_date', [$startOfYear, $endOfYear])
@@ -38,7 +36,6 @@ class RentalChart extends ChartWidget
             ->get()
             ->keyBy('month');
 
-        // Prepare month labels (Jan to Dec)
         $labels = [];
         $data = [];
 

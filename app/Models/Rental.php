@@ -9,24 +9,23 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Rental extends Model
 {
+    protected $guarded = [];
     /**
      * Atribut yang dapat diisi secara massal.
      * 
      * @var list<string>
      */
     protected $fillable = [
-        'performed_by',
-        'name',
-        'address',
-        'phone',
+        'id_user',
         'status',
         'down_payment',
         'rent_date',
         'return_date',
         'late_date',
         'late_fees',
-        'total_fees'
+        'total_fees',
     ];
+
 
     protected $primaryKey = 'id_rental';
 
@@ -38,10 +37,7 @@ class Rental extends Model
     protected function casts(): array
     {
         return [
-            'performed_by' => 'integer',
-            'name' => 'string',
-            'address' => 'string',
-            'phone' => 'string',
+            'id_user' => 'integer',
             'status' => 'string',
             'down_payment' => 'decimal:2',
             'rent_date' => 'date',
@@ -60,7 +56,7 @@ class Rental extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 
     /**
@@ -69,13 +65,19 @@ class Rental extends Model
      * @return HasMany<\Database\Eloquent\Relations\HasMany>
      * @see \App\Models\RentalDetail
      */
-    public function rentaldetails(): HasMany
+    public function rentalDetails(): HasMany
     {
-        return $this->hasMany(RentalDetail::class, 'id_rental');
+        return $this->hasMany(RentalDetail::class, 'id_rental', 'id_rental');
     }
 
     protected static function booted()
     {
+        static::created(function (Rental $rental) {
+            if (!$rental->status) {
+                $rental->status = 'pending';
+            }
+        });
+
         static::updated(function (Rental $rental) {
             if (!$rental->wasChanged('status')) {
                 return;

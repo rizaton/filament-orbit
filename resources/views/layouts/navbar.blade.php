@@ -12,7 +12,6 @@
                 <ul class="hidden lg:flex items-center justify-start gap-6 md:gap-8 py-3 sm:justify-center">
                     <x-navbar-link href="/" :active="request()->is('/') ? 'page' : false">Beranda</x-navbar-link>
                     <x-navbar-link href="/items" :active="request()->is('/items') ? 'page' : false">Alat</x-navbar-link>
-                    <x-navbar-link href="/contact" :active="request()->is('/contact') ? 'page' : false">Kontak</x-navbar-link>
                 </ul>
             </div>
 

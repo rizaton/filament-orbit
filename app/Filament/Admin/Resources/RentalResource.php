@@ -125,11 +125,11 @@ class RentalResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Diproses oleh')
-                    ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('user_id.name')
+                //     ->label('Nama Penyewa')
+                //     ->numeric()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Penyewa')
                     ->searchable(),

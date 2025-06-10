@@ -2,11 +2,10 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
 
-class StatsOverview extends BaseWidget
+class AdminStatsOverview extends \Filament\Widgets\StatsOverviewWidget
 {
     private static function statModels(string $model): Model
     {

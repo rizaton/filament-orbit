@@ -14,17 +14,23 @@ use Illuminate\Support\Facades\Auth;
 
 class RentalDetail extends Model
 {
+
+    protected $primaryKey = null;
+    public $incrementing = false;
+    public $timestamps = false;
+
     /**
      * Atribut yang dapat diisi secara massal.
      *
      * @var list<string>
      */
+
     protected $fillable = [
-        'rental_id',
-        'item_id',
+        'id_rental',
+        'id_item',
         'quantity',
         'is_returned',
-        'sub_total',
+        'sub_total'
     ];
 
     /**
@@ -59,7 +65,7 @@ class RentalDetail extends Model
      */
     public function rental(): BelongsTo
     {
-        return $this->belongsTo(Rental::class, 'id_rental');
+        return $this->belongsTo(Rental::class, 'id_rental', 'id_rental');
     }
 
     /**
@@ -70,7 +76,7 @@ class RentalDetail extends Model
      */
     public function item(): BelongsTo
     {
-        return $this->belongsTo(Item::class, 'id_item');
+        return $this->belongsTo(Item::class, 'id_item', 'id_item');
     }
 
     /**

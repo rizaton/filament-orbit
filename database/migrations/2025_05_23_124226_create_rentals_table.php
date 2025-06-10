@@ -17,9 +17,6 @@ return new class extends Migration
                 table: 'users',
                 column: 'id_user'
             )->nullOnDelete();
-            $table->string('name');
-            $table->string('address');
-            $table->string('phone');
             $table->enum('status', [
                 'pending',
                 'approved',
@@ -28,7 +25,7 @@ return new class extends Migration
                 'returned',
                 'late'
             ])->default('pending');
-            $table->decimal('down_payment', 15, 2);
+            $table->decimal('down_payment', 15, 2)->nullable();
             $table->date('rent_date');
             $table->date('return_date');
             $table->date('late_date')->nullable();

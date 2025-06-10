@@ -66,7 +66,7 @@ class CustomerStatsOverview extends BaseWidget
                 ->color(Color::Fuchsia)
                 ->description('Jumlah alat yang sedang disewa'),
 
-            Stat::make('Telat Kembali', $totalItemsRented)
+            Stat::make('Telat Kembali', $lateRentalCount)
                 ->color(Color::Red)
                 ->description('Jumlah sewa yang terlambat dikembalikan'),
 
