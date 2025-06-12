@@ -26,7 +26,9 @@ Route::controller(MessageController::class)->group(function () {
 });
 
 Route::get('/cart', function () {
-    return view('cart');
+    return view('cart', [
+        'items' => Item::all(),
+    ]);
 })->name('items');
 
 Route::controller(CheckoutController::class)->group(function () {

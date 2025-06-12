@@ -25,8 +25,9 @@ class CheckoutController extends Controller
     {
 
         return view('checkout', [
-            'terms' => Term::all(['slug', 'name', 'description']),
-            'rules' => Rule::all(['slug', 'name', 'description']),
+            'items' => Item::all(['slug', 'name', 'rent_price', 'image']),
+            'terms' => Term::all(['slug', 'name', 'content']),
+            'rules' => Rule::all(['slug', 'name', 'content']),
         ]);
     }
 
@@ -50,7 +51,10 @@ class CheckoutController extends Controller
             'returnDate' => ['required', 'date', 'after_or_equal:rentDate'],
         ]);
         try {
-            return Redirect::to('/customer/login');
+            return Redirect::to('/customer/login')->with([
+                'status' => 'checkout-redirect',
+                'message' => 'Silakan login atau buat akun untuk melanjutkan sewa.'
+            ]);
         } catch (\Throwable $th) {
             try {
                 $fullName = $data['firstName'] . ' ' . $data['lastName'];

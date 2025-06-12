@@ -1,11 +1,7 @@
 <div class="space-y-4 p-4">
-    <div class="bg-white dark:bg-gray-900 shadow rounded-lg p-4">
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Detail Peminjaman</h2>
         <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <div>
-                <p class="font-medium text-gray-800 dark:text-gray-100">Nama Penyewa</p>
-                <p class="text-gray-700 dark:text-gray-200">{{ $rental->user->name ?? '-' }}</p>
-            </div>
             <div>
                 <p class="font-medium text-gray-800 dark:text-gray-100">ID Sewa</p>
                 <p class="text-gray-700 dark:text-gray-200">{{ $rental->id_rental }}</p>
@@ -24,7 +20,7 @@
                 </p>
             </div>
             <div>
-                <p class="font-medium text-gray-800 dark:text-gray-100">Terlambat (Jika Ada)</p>
+                <p class="font-medium text-gray-800 dark:text-gray-100">Terlambat</p>
                 <p class="text-gray-700 dark:text-gray-200">{{ $rental->late_date?->format('d M Y') ?? '-' }}</p>
             </div>
             <div>
@@ -63,14 +59,12 @@
         </div>
     </div>
 
-
-    <div class="bg-white dark:bg-gray-900 shadow rounded-lg p-4">
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Detail Alat yang Dipinjam</h2>
 
         <table class="w-full text-sm text-left table-auto">
             <thead class="text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                    <th class="py-2">ID Alat</th>
                     <th class="py-2">Nama Alat</th>
                     <th class="py-2 text-center">Jumlah</th>
                     <th class="py-2 text-center">Sudah Dikembalikan</th>
@@ -80,8 +74,7 @@
             <tbody class="text-gray-600 dark:text-gray-200">
                 @forelse ($details as $detail)
                     <tr
-                        class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-200 dark:hover:bg-gray-800 transition">
-                        <td class="py-2">{{ $detail->id_item }}</td>
+                        class="border-b border-gray-200 dark:border-gray-800 hover:bg-gray-200 dark:hover:bg-gray-800 transition">
                         <td class="py-2">{{ $detail->item->name ?? '-' }}</td>
                         <td class="py-2 text-center">{{ $detail->quantity }}</td>
                         <td class="py-2 text-center">

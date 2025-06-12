@@ -119,20 +119,17 @@ class RentalResource extends Resource
                     ->color('success')
             ])
             ->columns([
-                Tables\Columns\TextColumn::make('rental_id')
+                Tables\Columns\TextColumn::make('id_rental')
                     ->label('ID Sewa')
                     ->numeric()
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                // Tables\Columns\TextColumn::make('user_id.name')
-                //     ->label('Nama Penyewa')
-                //     ->numeric()
-                //     ->sortable()
-                //     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('user.name')
                     ->label('Nama Penyewa')
-                    ->searchable(),
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('address')
                     ->label('Alamat Penyewa')
                     ->searchable()
@@ -143,8 +140,9 @@ class RentalResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\SelectColumn::make('status')
                     ->options([
-                        'pending' => 'Menunggu',
+                        'pending' => 'Menunggu Persetujuan',
                         'approved' => 'Disetujui',
+                        'rented' => 'Disewa',
                         'rejected' => 'Ditolak',
                         'returned' => 'Dikembalikan',
                         'late' => 'Terlambat',
@@ -350,7 +348,7 @@ class RentalResource extends Resource
                     Tables\Actions\ViewAction::make('Lihat Detail')
                         ->label('Lihat')
                         ->icon('heroicon-o-eye')
-                        ->modalHeading(fn($record) => 'Detail Peminjaman #' . $record->rental_id . ' - ' . $record->name)
+                        ->modalHeading(fn($record) => 'Detail Peminjaman ID #' . $record->id_rental . ' - ' . $record->user->name)
                         ->modalWidth('2xl')
                         ->modalContent(fn($record) => view('filament.custom.rental-details', [
                             'rental' => $record,

@@ -16,8 +16,6 @@ class ListRentals extends ListRecords
             Actions\CreateAction::make()
                 ->label('Sewa Alat')
                 ->createAnother(false)
-                ->modalDescription('Isi data penyewaan dengan lengkap dan benar. Pastikan semua informasi yang diberikan akurat untuk memproses penyewaan Anda.')
-                ->modalHeading('Sewa Alat')
                 ->modalSubmitActionLabel('Sewa')
                 ->modalCancelActionLabel('Batal')
                 ->icon('heroicon-o-plus'),

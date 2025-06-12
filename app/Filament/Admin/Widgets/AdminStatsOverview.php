@@ -26,7 +26,7 @@ class AdminStatsOverview extends \Filament\Widgets\StatsOverviewWidget
             Stat::make('Penyewaan belum diproses', self::statModels('rental')::where('status', 'pending')->count())
                 ->description('Penyewaan')
                 ->color('warning'),
-            Stat::make('Penyewaan Berlangsung', self::statModels('rental')::where('status', 'approved')->count())
+            Stat::make('Penyewaan Berlangsung', self::statModels('rental')::where('status', 'rented')->count())
                 ->description('Berlangsung')
                 ->color('success'),
             Stat::make('Alat yang tidak tersedia', self::statModels('item')::where([

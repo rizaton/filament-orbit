@@ -72,11 +72,6 @@ class Rental extends Model
 
     protected static function booted()
     {
-        static::created(function (Rental $rental) {
-            if (!$rental->status) {
-                $rental->status = 'pending';
-            }
-        });
 
         static::updated(function (Rental $rental) {
             if (!$rental->wasChanged('status')) {

@@ -31,9 +31,9 @@ class ItemChart extends ChartWidget
                         $unavailableItems,
                     ],
                     'backgroundColor' => [
-                        '#3B82F6', // Biru untuk semua alat
-                        '#10B981', // Hijau untuk tersedia
-                        '#EF4444', // Merah untuk tidak tersedia
+                        '#3B82F6',
+                        '#10B981',
+                        '#EF4444',
                     ],
                 ],
             ],

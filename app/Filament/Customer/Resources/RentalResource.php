@@ -26,6 +26,7 @@ use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Set;
+use Filament\Support\Colors\Color;
 use Filament\Tables\Columns\TextColumn;
 
 class RentalResource extends Resource
@@ -35,7 +36,7 @@ class RentalResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
     protected static ?int $navigationSort = 1;
     protected static ?string $slug = 'rent';
-    protected static ?string $navigationLabel = 'List Penyewaan';
+    protected static ?string $navigationLabel = 'Sewa Alat';
     protected static ?string $pluralModelLabel = 'Sewa';
     protected static ?string $modelLabel = 'Sewa';
 
@@ -96,9 +97,11 @@ class RentalResource extends Resource
                                     ->disabled(fn(Get $get): bool => !$get('rent_date'))
                                     ->afterStateUpdated(
                                         function (Get $get, Set $set, ?string $old, ?string $state) {
-                                            if ($state && $get('rent_date') && Carbon::parse($state)->lessThanOrEqualTo(Carbon::parse($get('rent_date')))) {
-                                                dd('Damn this get triggered', $get('rent_date'), $state, Carbon::parse($state)->lessThanOrEqualTo(Carbon::parse($get('rent_date'))));
-                                                $set('return_date', Carbon::parse($get('rent_date'))->addDays(1)->format('d-m-Y'));
+                                            if (
+                                                $state && $get('rent_date') && Carbon::parse($state)
+                                                ->lessThanOrEqualTo(Carbon::parse($get('rent_date')))
+                                            ) {
+                                                $set('return_date', Carbon::parse($get('rent_date')));
                                             }
                                         }
                                     )
@@ -111,10 +114,11 @@ class RentalResource extends Resource
                     ->description('Isi data penyewaan alat yang akan disewa.')
                     ->schema([
                         Repeater::make('rentalDetails')
+                            ->label('')
                             ->relationship('rentalDetails')
                             ->schema([
                                 Select::make('id_item')
-                                    ->label('Item')
+                                    ->label('Pilih Nama alat')
                                     ->options(Item::query()
                                         ->where('stock', '>', 0)
                                         ->where('is_available', true)
@@ -134,6 +138,7 @@ class RentalResource extends Resource
                                     }),
 
                                 TextInput::make('quantity')
+                                    ->label('Jumlah Alat')
                                     ->numeric()
                                     ->minValue(1)
                                     ->required()
@@ -148,6 +153,7 @@ class RentalResource extends Resource
                                     ->live(),
 
                                 TextInput::make('sub_total')
+                                    ->label('Sub Total')
                                     ->readOnly()
                                     ->numeric()
                                     ->required(),
@@ -177,12 +183,32 @@ class RentalResource extends Resource
                 TextColumn::make('status')
                     ->label('Status Penyewaan')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(function ($state) {
+                        return match ($state) {
+                            'pending' => 'Menunggu Persetujuan',
+                            'approved' => 'Disetujui',
+                            'rented' => 'Disewa',
+                            'rejected' => 'Ditolak',
+                            'returned' => 'Dikembalikan',
+                            'late' => 'Terlambat',
+                            default => ucfirst($state),
+                        };
+                    })
+                    ->color(fn($state) => match ($state) {
+                        'pending' => Color::Orange,
+                        'approved' => Color::Green,
+                        'returned' => Color::Stone,
+                        'rented' => Color::Blue,
+                        'late', 'rejected' => Color::Red,
+                        default => Color::Orange,
+                    })
+                    ->badge(),
                 TextColumn::make('down_payment')
                     ->label('Uang Muka')
                     ->sortable()
                     ->searchable()
-                    ->prefix('Rp. '),
+                    ->money('IDR', true),
                 TextColumn::make('rent_date')
                     ->label('Tanggal Mulai Sewa')
                     ->sortable()
@@ -202,7 +228,7 @@ class RentalResource extends Resource
                     ->label('Total Biaya')
                     ->sortable()
                     ->searchable()
-                    ->prefix('Rp. '),
+                    ->money('IDR', true),
                 TextColumn::make('created_at')
                     ->label('Tanggal Dibuat')
                     ->sortable()
@@ -230,19 +256,30 @@ class RentalResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()
-                        ->label('Lihat Detail Penyewaan')
-                        ->icon('heroicon-o-eye'),
+                    Tables\Actions\ViewAction::make('Lihat Detail')
+                        ->label('Lihat Data Sewa')
+                        ->icon('heroicon-o-eye')
+                        ->modalHeading(fn($record) => 'ID Peminjaman #' . $record->id_rental . ' - ' . $record->user->name)
+                        ->modalWidth('2xl')
+                        ->modalContent(fn($record) => view('filament.custom.rental-customer', [
+                            'rental' => $record,
+                            'details' => \App\Models\RentalDetail::where('id_rental', $record->id_rental)
+                                ->with(['item'])
+                                ->get()
+                        ]))
+                        ->form([]),
+                    Tables\Actions\EditAction::make()
+                        ->visible(fn($record) => $record->status === 'pending')
+                        ->label('Ubah Tanggal Sewa')
+                        ->icon('heroicon-o-pencil')
+                        ->requiresConfirmation()
+                        ->successNotificationTitle('Penyewaan berhasil diperbarui'),
                     Tables\Actions\DeleteAction::make()
-                        ->label('Hapus Penyewaan')
+                        ->visible(fn($record) => !in_array($record->status, ['rented', 'late']))
+                        ->label(fn($record) =>  in_array($record->status, ['pending', 'approved']) ? 'Batalkan Sewa' : 'Hapus Data Sewa')
                         ->icon('heroicon-o-trash')
                         ->requiresConfirmation()
                         ->successNotificationTitle('Penyewaan berhasil dihapus'),
-                    Tables\Actions\EditAction::make()
-                        ->label('Edit Penyewaan')
-                        ->icon('heroicon-o-pencil-square')
-                        ->requiresConfirmation()
-                        ->successNotificationTitle('Penyewaan berhasil diperbarui'),
                 ]),
             ])
             ->bulkActions([
@@ -251,20 +288,13 @@ class RentalResource extends Resource
                 ]),
             ])
             ->emptyStateHeading('Tidak Ada Penyewaan')
-            ->emptyStateDescription('Anda belum melakukan penyewaan apapun.')
+            ->emptyStateDescription('Anda belum melakukan penyewaan alat apapun.')
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make()
                     ->label('Sewa Alat')
                     ->icon('heroicon-o-briefcase')
                     ->color('primary'),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
