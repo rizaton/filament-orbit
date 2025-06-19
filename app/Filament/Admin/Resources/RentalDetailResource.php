@@ -37,61 +37,61 @@ class RentalDetailResource extends Resource
             ->schema([
                 Forms\Components\Select::make('id_rental')
                     ->label('ID Sewa')
+                    ->relationship('rental', 'id_rental')
                     ->placeholder('Pilih Sewa')
-                    ->options(Rental::all()->pluck('name', 'id_rental'))
+                    ->options(
+                        Rental::with('user')->get()->mapWithKeys(function ($rental) {
+                            return [
+                                $rental->id_rental => 'RentalID# ' . $rental->id_rental . ' - ' . $rental->user->name,
+                            ];
+                        })
+                    )
                     ->searchable()
                     ->required()
                     ->preload()
                     ->required(),
                 Forms\Components\Select::make('id_item')
-                    ->label('ID Alat')
-                    ->placeholder('Pilih Alat')
+                    ->label('Pilih Nama alat')
+                    ->options(Item::query()
+                        ->where('stock', '>', 0)
+                        ->where('is_available', true)
+                        ->orderBy('name')
+                        ->pluck('name', 'id_item'))
+                    ->required()
                     ->searchable()
-                    ->options(Item::all()->pluck('name', 'id_item'))
-                    ->afterStateUpdated(function (Get $get, Set $set) {
-                        if ($get('id_item') ?? '' || !$get('quantity')) {
-                            return;
+                    ->live()
+                    ->afterStateUpdated(function (Get $get, Set $set, ?string $old, ?string $state) {
+                        if ($state) {
+                            $item = Item::find($state);
+                            if ($item) {
+                                $set('sub_total', $item->rent_price);
+                                $set('quantity', 1);
+                            }
                         }
-                        $item = Item::find($get('id_item')) ?? null;
-                        if (!$item) {
-                            return;
-                        }
-                        $sub_total = (int) $get('quantity') * (int) $item->rent_price;
-                        $set('sub_total', $sub_total);
-                    })
-                    ->required(),
+                    }),
                 Forms\Components\TextInput::make('quantity')
                     ->label('Jumlah Alat')
-                    ->placeholder('Masukkan jumlah alat yang disewa')
-                    ->helperText('Jumlah alat yang disewa harus diisi dengan benar')
-                    ->maxLength(4)
-                    ->required()
-                    ->integer()
+                    ->numeric()
                     ->minValue(1)
-                    ->afterStateUpdated(function (Get $get, Set $set) {
-                        if ($get('id_item') ?? '' || !$get('quantity')) {
-                            return;
+                    ->required()
+                    ->afterStateUpdated(function (Get $get, Set $set, ?string $old, ?string $state) {
+                        if ($state && $get('id_item')) {
+                            $item = Item::find($get('id_item'));
+                            if ($item) {
+                                $set('sub_total', $item->rent_price * (int)$state);
+                            }
                         }
-                        $item = Item::find((int)$get('id_item')) ?? null;
-                        if (!$item) {
-                            return;
-                        }
-                        $sub_total = (int) $get('quantity') * (int) $item->rent_price;
-                        $set('sub_total', $sub_total);
-                    })
-                    ->numeric(),
+                    })->maxValue(fn(Get $get): int => Item::find($get('id_item'))->stock ?? 0)
+                    ->live(),
+                Forms\Components\TextInput::make('sub_total')
+                    ->label('Sub Total')
+                    ->readOnly()
+                    ->numeric()
+                    ->required(),
                 Forms\Components\Toggle::make('is_returned')
                     ->label('Sudah Dikembalikan')
                     ->helperText('Tandai jika alat sudah dikembalikan oleh penyewa')
                     ->required(),
-                Forms\Components\TextInput::make('sub_total')
-                    ->label('Sub Total')
-                    ->placeholder('Sub total akan dihitung otomatis')
-                    ->helperText('Sub total akan dihitung secara otomatis berdasarkan jumlah alat yang disewa dan harga sewa per alat.')
-                    ->maxLength(15)
-                    ->required()
-                    ->numeric()
-                    ->readOnly(true),
             ]);
     }
 
@@ -119,7 +119,7 @@ class RentalDetailResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('rental.name')
+                Tables\Columns\TextColumn::make('rental.user.name')
                     ->label('Nama Penyewa')
                     ->searchable()
                     ->sortable(),
@@ -278,7 +278,7 @@ class RentalDetailResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make()
                         ->label('Lihat Detail Sewa')
-                        ->modalHeading(fn($record) => "Detail Sewa #{$record->id}")
+                        ->modalHeading(fn($record) => "Detail Sewa #{$record->id_rental}")
                         ->modalContent(fn($record) => view('filament.custom.rental-detail', [
                             'record' => $record,
                         ]))

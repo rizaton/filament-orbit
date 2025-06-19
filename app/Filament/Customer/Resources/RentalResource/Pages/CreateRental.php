@@ -23,25 +23,8 @@ class CreateRental extends CreateRecord
     {
         try {
             $rentalData = $this->record;
-            $rentDate = Carbon::parse($rentalData->rent_date);
-            $returnDate = Carbon::parse($rentalData->return_date);
-            $rentDateDiff = $rentDate->diffInDays($returnDate);
-            $rentDateDiff += 1;
-            $totalFees = $rentalData->rentalDetails->sum(function ($detail) use ($rentDateDiff) {
-                return $detail->item?->rent_price * $rentDateDiff * $detail->quantity ?? 0;
-            });
-            $user = $rentalData->user;
-            if (!$user || !$user->city) throw new Exception('User or city not found');
-
-            $downPayment = match (true) {
-                $user->city === 'Luar Jabodetabek' => $totalFees,
-                $totalFees > 2000000 => $totalFees * 0.5,
-                default => $totalFees * 0.25,
-            };
-            $rentalData->update([
-                'total_fees' => $totalFees,
-                'down_payment' => $downPayment,
-            ]);
+            $rentalData->loadMissing(['rentalDetails.item', 'user']);
+            $rentalData->recalculateTotals();
         } catch (\Throwable $th) {
             throw new Exception($th);
         }

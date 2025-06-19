@@ -11,19 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class RentalDetail extends Model
 {
-
-    protected $primaryKey = null;
-    public $incrementing = false;
-    public $timestamps = false;
-
-    /**
-     * Atribut yang dapat diisi secara massal.
-     *
-     * @var list<string>
-     */
 
     protected $fillable = [
         'id_rental',
@@ -33,100 +24,87 @@ class RentalDetail extends Model
         'sub_total'
     ];
 
-    /**
-     * Attribut yang harus di-cast.
-     *
-     * @return array<string, string>
-     */
+    protected $primaryKey = 'id_rental_detail';
+
     protected function casts(): array
     {
         return [
-            'rental_id' => 'integer',
-            'item_id' => 'integer',
+            'id_rental' => 'integer',
+            'id_item' => 'integer',
             'quantity' => 'integer',
             'is_returned' => 'boolean',
             'sub_total' => 'decimal:2',
         ];
     }
-    /**
-     * Relasi dengan model Rental dan Item.
-     *
-     * @var list<string>
-     * @see \App\Models\Rental
-     * @see \App\Models\Item
-     */
+
     protected $with = ['rental', 'item'];
 
-    /**
-     * Mengambil detail rental yang terkait dengan item ini.
-     *
-     * @return BelongsTo<\Database\Eloquent\Relations\BelongsTo>
-     * @see \App\Models\Rental
-     */
     public function rental(): BelongsTo
     {
         return $this->belongsTo(Rental::class, 'id_rental', 'id_rental');
     }
 
-    /**
-     * Mengambil detail item yang terkait dengan item ini.
-     *
-     * @return BelongsTo<\Database\Eloquent\Relations\BelongsTo>
-     * @see \App\Models\Item
-     */
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class, 'id_item', 'id_item');
     }
 
-    /**
-     * method "booted" untuk menangani event model.
-     * 
-     * @return void
-     * @see \Illuminate\Database\Eloquent\Model::booted()
-     * @see \Illuminate\Database\Eloquent\Model::updating()
-     * @see \Illuminate\Database\Eloquent\Model::updated()
-     */
     protected static function booted()
     {
+        static::created(function (RentalDetail $rentalDetail) {
+            $rentalDetail->rental->recalculateTotals();
+        });
+
         static::updating(function (RentalDetail $rentalDetail) {
-
-            // Jika quantity berubah, hitung ulang sub_total
-            // dan update total_fees pada rental terkait
-            // serta down_payment berdasarkan total_fees
-
             if ($rentalDetail->isDirty('quantity')) {
-                $previousSubTotal = $rentalDetail->getOriginal('sub_total');
-
-                $rentalDetail->loadMissing('item');
-                $price = (float) $rentalDetail->item->rent_price;
-                $qty = (int) $rentalDetail->quantity;
-
-                if ($price <= 0) {
-                    throw new \InvalidArgumentException('Harga item tidak boleh kurang dari atau sama dengan nol.');
-                }
-
-                if ($qty <= 0) {
-                    throw new \InvalidArgumentException('Jumlah sewa tidak boleh kurang dari atau sama dengan nol.');
-                }
-
-                DB::transaction(function () use ($rentalDetail, $qty, $price, $previousSubTotal) {
-                    $rentalDetail->sub_total = $qty * $price;
-
-                    $rental = $rentalDetail->rental;
-                    $rental->total_fees += $rentalDetail->sub_total - $previousSubTotal;
-
-                    $rental->down_payment = self::calculateDownPayment($rental->total_fees);
-                    $rental->save();
+                DB::transaction(function () use ($rentalDetail) {
+                    $rentalDetail->recalculateSubtotal();
+                    $rentalDetail->rental->recalculateTotals();
                 });
             }
         });
     }
 
-    protected static function calculateDownPayment(float $totalFees): float
+    protected static function calculateDownPayment(float $totalFees, string $city): float
     {
-        return $totalFees > 2000000
-            ? $totalFees * 0.5
-            : $totalFees * 0.25;
+        try {
+            return match (true) {
+                $city === 'Luar Jabodetabek' => $totalFees,
+                $totalFees > 2000000 => $totalFees * 0.5,
+                default => $totalFees * 0.25,
+            };
+        } catch (\Throwable $th) {
+            Log::error('Error calculating down payment', [
+                'total_fees' => $totalFees,
+                'city' => $city,
+                'error' => $th->getMessage(),
+                'timestamp' => now(),
+            ]);
+            return 0.0;
+        }
+    }
+
+    public function recalculateSubtotal(): void
+    {
+        $this->loadMissing('item');
+        $price = (float) $this->item->rent_price;
+        $qty = (int) $this->quantity;
+        if ($price <= 0) {
+            Log::error('Harga item tidak boleh <= 0.', [
+                'item_id' => $this->id_item,
+                'rental_detail_id' => $this->id_rental_detail,
+                'timestamp' => now(),
+            ]);
+            throw new \InvalidArgumentException('Harga item tidak boleh <= 0.');
+        }
+        if ($qty <= 0) {
+            Log::error('Jumlah sewa tidak boleh <= 0.', [
+                'item_id' => $this->id_item,
+                'rental_detail_id' => $this->id_rental_detail,
+                'timestamp' => now(),
+            ]);
+        }
+        $this->sub_total = $price * $qty;
+        $this->save();
     }
 }

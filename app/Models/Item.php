@@ -23,7 +23,7 @@ class Item extends Model
         'stock',
         'rent_price',
         'description',
-        'category_id',
+        'id_category',
         'is_available',
         'image',
     ];

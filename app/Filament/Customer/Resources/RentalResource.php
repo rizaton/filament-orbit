@@ -3,31 +3,37 @@
 namespace App\Filament\Customer\Resources;
 
 use Filament\Forms;
+use App\Models\Item;
 use Filament\Tables;
 use App\Models\Rental;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
+use Filament\Actions\CreateAction;
+use Filament\Actions\StaticAction;
+use Filament\Support\Colors\Color;
+use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
+use Filament\Support\Enums\IconSize;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Repeater;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Customer\Resources\RentalResource\Pages;
 use App\Filament\Customer\Resources\RentalResource\RelationManagers;
-use App\Models\Item;
-use Filament\Actions\CreateAction;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Set;
-use Filament\Support\Colors\Color;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Support\Enums\IconPosition;
 
 class RentalResource extends Resource
 {
@@ -165,6 +171,43 @@ class RentalResource extends Resource
                     ->columns(1)
                     ->collapsible()
                     ->collapsed(),
+                Section::make('Syarat dan Ketentuan Sewa Alat')
+                    ->description('Syarat dan ketentuan sewa alat.')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                Checkbox::make('terms')
+                                    ->label('Setuju dengan syarat dan ketentuan sewa alat')
+                                    ->hintAction(
+                                        Action::make('show-terms')
+                                            ->hiddenLabel()
+                                            ->icon('heroicon-o-information-circle')
+                                            ->iconSize(IconSize::Large)
+                                            ->tooltip('Lihat syarat dan ketentuan')
+                                            ->modalHeading('')
+                                            ->modalContent(new HtmlString(view('filament.custom.terms')->render()))
+                                            ->modalCancelActionLabel(__('Kembali'))
+                                            ->modalSubmitAction(false)
+                                    )
+                                    ->accepted()
+                                    ->required(),
+                                Checkbox::make('conduct')
+                                    ->label('Setuju dengan tata tertib sewa alat')
+                                    ->hintAction(
+                                        Action::make('show-conduct')
+                                            ->hiddenLabel()
+                                            ->icon('heroicon-o-information-circle')
+                                            ->iconSize(IconSize::Large)
+                                            ->tooltip('Lihat tata tertib')
+                                            ->modalHeading('')
+                                            ->modalContent(new HtmlString(view('filament.custom.rules')->render()))
+                                            ->modalCancelActionLabel(__('Kembali'))
+                                            ->modalSubmitAction(false)
+                                    )
+                                    ->accepted()
+                                    ->required(),
+                            ]),
+                    ])
             ]);
     }
 
@@ -190,6 +233,7 @@ class RentalResource extends Resource
                             'approved' => 'Disetujui',
                             'rented' => 'Disewa',
                             'rejected' => 'Ditolak',
+                            'returning' => 'Pengembalian',
                             'returned' => 'Dikembalikan',
                             'late' => 'Terlambat',
                             default => ucfirst($state),
@@ -249,6 +293,7 @@ class RentalResource extends Resource
                         'approved' => 'Disetujui',
                         'rented' => 'Disewa',
                         'rejected' => 'Ditolak',
+                        'returning' => 'Pengembalian',
                         'returned' => 'Dikembalikan',
                         'late' => 'Terlambat',
                     ])
@@ -270,10 +315,19 @@ class RentalResource extends Resource
                         ->form([]),
                     Tables\Actions\EditAction::make()
                         ->visible(fn($record) => $record->status === 'pending')
-                        ->label('Ubah Tanggal Sewa')
+                        ->label('Ubah tanggal Sewa')
                         ->icon('heroicon-o-pencil')
                         ->requiresConfirmation()
-                        ->successNotificationTitle('Penyewaan berhasil diperbarui'),
+                        ->successNotificationTitle('Tanggal sewa berhasil diperbarui'),
+                    Tables\Actions\Action::make('return_request')
+                        ->visible(fn($record) => $record->status === 'rented')
+                        ->label('Ajukan Pengembalian')
+                        ->icon('heroicon-o-arrow-right')
+                        ->requiresConfirmation()
+                        ->action(function ($record) {
+                            $record->update(['status' => 'returning']);
+                            return Pages\ListRentals::route('/');
+                        }),
                     Tables\Actions\DeleteAction::make()
                         ->visible(fn($record) => !in_array($record->status, ['rented', 'late']))
                         ->label(fn($record) =>  in_array($record->status, ['pending', 'approved']) ? 'Batalkan Sewa' : 'Hapus Data Sewa')

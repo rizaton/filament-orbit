@@ -112,7 +112,7 @@ class ItemResource extends Resource
                     ->modalHeading(fn($record) => "Detail Alat: {$record->name}")
                     ->modalContent(fn($record) => view('filament.custom.item-customer', [
                         'record' => $record,
-                    ]))
+                    ])->render())
                     ->form([]),
             ]);
     }

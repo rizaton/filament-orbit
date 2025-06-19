@@ -52,14 +52,6 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         }
     }
 
-    public function isAdmin(): bool
-    {
-        return Auth::user()->is_admin;
-    }
-    public function isCustomer(): bool
-    {
-        return !Auth::user()->is_admin;
-    }
     public function rentals(): HasMany
     {
         return $this->hasMany(Rental::class, 'id_user');

@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rental_details', function (Blueprint $table) {
+            $table->id('id_rental_detail');
             $table->foreignId('id_rental')->constrained(
                 table: 'rentals',
                 column: 'id_rental'
@@ -20,7 +21,7 @@ return new class extends Migration
                 table: 'items',
                 column: 'id_item'
             )->cascadeOnDelete();
-            $table->integer('quantity');
+            $table->integer('quantity', 5)->default(1);
             $table->boolean('is_returned')->default(false);
             $table->decimal('sub_total', 15, 2);
             $table->timestamps();

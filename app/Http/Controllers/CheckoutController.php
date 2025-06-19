@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
-use App\Models\Rule;
-use App\Models\Term;
 use App\Models\Rental;
 use App\Models\RentalDetail;
 
@@ -26,8 +24,6 @@ class CheckoutController extends Controller
 
         return view('checkout', [
             'items' => Item::all(['slug', 'name', 'rent_price', 'image']),
-            'terms' => Term::all(['slug', 'name', 'content']),
-            'rules' => Rule::all(['slug', 'name', 'content']),
         ]);
     }
 

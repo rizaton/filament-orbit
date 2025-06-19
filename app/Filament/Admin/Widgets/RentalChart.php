@@ -47,7 +47,7 @@ class RentalChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Sewa Bulanan',
+                    'label' => 'Total Sewa',
                     'data' => $data,
                     'borderColor' => '#3b82f6',
                     'fill' => false,

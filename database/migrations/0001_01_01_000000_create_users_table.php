@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id('id_user');
-            $table->string('name');
-            $table->string('email')->unique();
+            $table->string('name', 30);
+            $table->string('email', 40)->unique();
             $table->boolean('is_admin')->default(false);
-            $table->string('phone');
-            $table->text('address');
+            $table->string('phone', 15);
+            $table->text('address', 100);
             $table->enum('city', [
                 'Jakarta',
                 'Bogor',
@@ -27,7 +27,7 @@ return new class extends Migration
                 'Luar Jabodetabek',
             ])->default('Luar Jabodetabek');
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password', 255);
             $table->rememberToken();
             $table->timestamps();
         });

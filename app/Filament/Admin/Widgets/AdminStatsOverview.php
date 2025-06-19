@@ -2,18 +2,19 @@
 
 namespace App\Filament\Admin\Widgets;
 
+use App\Models\Rental;
+use Filament\Support\Colors\Color;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Database\Eloquent\Model;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
-class AdminStatsOverview extends \Filament\Widgets\StatsOverviewWidget
+class AdminStatsOverview extends BaseWidget
 {
-    private static function statModels(string $model): Model
+    private function statModels()
     {
-        $models = [
-            'rental' => \App\Models\Rental::class,
-            'item' => \App\Models\Item::class,
-        ];
-        return new $models[$model];
+        $rentalCounts = Rental::selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
+        return $rentalCounts;
     }
 
     protected static bool $isLazy = true;
@@ -22,19 +23,17 @@ class AdminStatsOverview extends \Filament\Widgets\StatsOverviewWidget
 
     protected function getStats(): array
     {
+        $statusCounts = self::statModels();
         return [
-            Stat::make('Penyewaan belum diproses', self::statModels('rental')::where('status', 'pending')->count())
+            Stat::make('Penyewaan belum diproses', $statusCounts['pending'] ?? 0)
                 ->description('Penyewaan')
-                ->color('warning'),
-            Stat::make('Penyewaan Berlangsung', self::statModels('rental')::where('status', 'rented')->count())
+                ->color(Color::Yellow),
+            Stat::make('Penyewaan Berlangsung', $statusCounts['rented'] ?? 0)
                 ->description('Berlangsung')
-                ->color('success'),
-            Stat::make('Alat yang tidak tersedia', self::statModels('item')::where([
-                ['stock', '<=', 0],
-                ['is_available', true],
-            ])->count())
-                ->description('Tidak Tersedia dari ' . self::statModels('item')::count() . ' Alat')
-                ->color('danger'),
+                ->color(Color::Green),
+            Stat::make('Dalam Pengembalian', $statusCounts['returning'] ?? 0)
+                ->description('Pengembalian')
+                ->color(Color::Red),
         ];
     }
 }

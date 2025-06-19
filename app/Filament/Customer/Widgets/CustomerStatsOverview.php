@@ -19,7 +19,7 @@ class CustomerStatsOverview extends BaseWidget
         $userId = Auth::user()->id_user;
 
         $rentalCounts = Rental::where('id_user', $userId)
-            ->whereIn('status', ['pending', 'approved', 'rented', 'late'])
+            ->whereIn('status', ['pending', 'approved', 'rented', 'late', 'returning'])
             ->selectRaw('status, COUNT(*) as count')
             ->groupBy('status')
             ->pluck('count', 'status');
@@ -28,11 +28,6 @@ class CustomerStatsOverview extends BaseWidget
             $query->where('id_user', $userId)
                 ->where('status', 'rented');
         })->where('is_returned', false)->sum('quantity');
-
-        $totalItemsNotReturned = RentalDetail::whereHas('rental', function ($query) use ($userId) {
-            $query->where('id_user', $userId)
-                ->where('status', 'returned');
-        })->where('is_returned', false)->count();
 
         return [
             Stat::make('Pengajuan Sewa', $rentalCounts['pending'] ?? 0)
@@ -51,13 +46,13 @@ class CustomerStatsOverview extends BaseWidget
                 ->color(Color::Fuchsia)
                 ->description('Jumlah alat yang sedang disewa'),
 
+            Stat::make('Dalam Pengembalian', $rentalCounts['returning'] ?? 0)
+                ->color(Color::Red)
+                ->description('Dalam proses pengembalian sewa'),
+
             Stat::make('Telat Kembali', $rentalCounts['late'] ?? 0)
                 ->color(Color::Red)
                 ->description('Jumlah sewa yang terlambat dikembalikan'),
-
-            Stat::make('Alat Belum Kembali', $totalItemsNotReturned)
-                ->color(Color::Red)
-                ->description('Alat yang belum dikembalikan'),
         ];
     }
 }

@@ -130,11 +130,19 @@ class RentalResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('address')
+                Tables\Columns\TextColumn::make('user.address')
                     ->label('Alamat Penyewa')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('phone')
+                Tables\Columns\TextColumn::make('user.city')
+                    ->label('Kota Penyewa')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('user.city')
+                    ->label('Kota Penyewa')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('user.phone')
                     ->label('Nomor telepon Penyewa')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -144,6 +152,7 @@ class RentalResource extends Resource
                         'approved' => 'Disetujui',
                         'rented' => 'Disewa',
                         'rejected' => 'Ditolak',
+                        'returning' => 'Dalam Proses Pengembalian',
                         'returned' => 'Dikembalikan',
                         'late' => 'Terlambat',
                     ]),
@@ -187,9 +196,11 @@ class RentalResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'pending' => 'Menunggu',
+                        'pending' => 'Menunggu Persetujuan',
                         'approved' => 'Disetujui',
+                        'rented' => 'Disewa',
                         'rejected' => 'Ditolak',
+                        'returning' => 'Dalam Proses Pengembalian',
                         'returned' => 'Dikembalikan',
                         'late' => 'Terlambat',
                     ])->label('Status'),

@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Rental extends Model
 {
@@ -100,5 +102,65 @@ class Rental extends Model
                 }
             }
         });
+    }
+
+    public function getRentDurationInDays(?string $customReturnDate = null): int
+    {
+        try {
+            $rentDate = Carbon::parse($this->rent_date);
+            $returnDate = $customReturnDate
+                ? Carbon::parse($customReturnDate)
+                : Carbon::parse($this->return_date);
+            return $rentDate->diffInDays($returnDate) + 1;
+        } catch (\Exception $e) {
+            Log::error('Error calculating rent duration', [
+                'rental_id' => $this->id_rental,
+                'error' => $e->getMessage(),
+                'timestamp' => now(),
+            ]);
+            if ($this->rent_date && $this->return_date) {
+                return Carbon::parse($this->rent_date)->diffInDays(Carbon::parse($this->return_date)) + 1;
+            } else {
+                Log::warning('Invalid rent or return date for rental', [
+                    'rental_id' => $this->id_rental,
+                    'rent_date' => $this->rent_date,
+                    'return_date' => $this->return_date,
+                    'timestamp' => now(),
+                ]);
+                return 0;
+            }
+        }
+    }
+
+    public function recalculateTotals(?string $customReturnDate = null): void
+    {
+        try {
+            $this->loadMissing(['rentalDetails.item', 'user']);
+            $rentDays = $this->getRentDurationInDays();
+
+            if (!$this->user || !$this->user->city) {
+                Log::warning('User or city missing during recalculateTotals', [
+                    'rental_id' => $this->id_rental,
+                    'user_id' => $this->id_user,
+                    'timestamp' => now(),
+                ]);
+                $this->down_payment = 0;
+                $this->save();
+                return;
+            }
+
+            $this->total_fees = $this->rentalDetails->sum(function ($detail) use ($rentDays) {
+                return $detail->item?->rent_price * $detail->quantity * $rentDays ?? 0;
+            });
+
+            $this->down_payment = RentalDetail::calculateDownPayment($this->total_fees, $this->user->city);
+            $this->save();
+        } catch (\Throwable $th) {
+            Log::error('Error recalculating rental totals', [
+                'rental_id' => $this->id_rental,
+                'error' => $th->getMessage(),
+                'timestamp' => now(),
+            ]);
+        }
     }
 }

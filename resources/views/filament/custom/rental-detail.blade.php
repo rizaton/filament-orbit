@@ -5,7 +5,7 @@
             <span class="font-medium text-gray-600">
                 ID Sewa:
             </span>
-            {{ $record->rental_id }}
+            {{ $record->id_rental }}
         </p>
         <p>
             <span class="font-medium text-gray-600">
