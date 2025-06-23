@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Customer\Pages\Auth;
+namespace App\Filament\Auth;
 
 use Filament\Forms\Form;
 use Filament\Forms\Components\Select;

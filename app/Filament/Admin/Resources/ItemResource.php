@@ -27,7 +27,6 @@ class ItemResource extends Resource
     protected static ?string $pluralModelLabel = 'List Alat-alat';
     protected static ?string $modelLabel = 'Alat';
     protected static ?string $breadcrumb = 'Alat';
-
     public static function form(Form $form): Form
     {
         return $form

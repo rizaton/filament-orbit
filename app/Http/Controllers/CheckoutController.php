@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Models\Rental;
 use App\Models\RentalDetail;
-
-
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -14,25 +12,12 @@ use Illuminate\Support\Facades\Redirect;
 
 class CheckoutController extends Controller
 {
-    /**
-     * Menampilkan halaman checkout.
-     *
-     * @return View
-     */
     public function create(): View
     {
-
         return view('checkout', [
             'items' => Item::all(['slug', 'name', 'rent_price', 'image']),
         ]);
     }
-
-    /**
-     * Menyimpan data checkout yang dikirimkan dari form.
-     *
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
@@ -64,7 +49,6 @@ class CheckoutController extends Controller
                     'message' => 'Informasi checkout tidak lengkap atau tidak valid.'
                 ]);
             }
-
             try {
                 $dirtyCarts = collect($data['cart'])->map(function ($cartItem) {
                     return [
@@ -72,11 +56,9 @@ class CheckoutController extends Controller
                         'quantity' => $cartItem['qty'],
                     ];
                 })->toArray();
-
                 $rent_total = collect($dirtyCarts)->sum(function ($dirtyCartItem) {
                     return $dirtyCartItem['item']['rent_price'] * $dirtyCartItem['quantity'];
                 });
-
                 if ($rent_total > 2000000) {
                     $down_payment = $rent_total * 0.5;
                 } else {
@@ -88,7 +70,6 @@ class CheckoutController extends Controller
                     'message' => 'Data keranjang tidak valid atau tidak lengkap.'
                 ]);
             }
-
             try {
                 $rent = Rental::create([
                     'name' => $fullName,
@@ -101,19 +82,16 @@ class CheckoutController extends Controller
                 ]);
                 $rentalId = $rent->id;
                 $rentalDetails = [];
-
                 foreach ($dirtyCarts as $key => $dirtyCartItem) {
                     $itemDetails = $dirtyCartItem['item'];
                     $quantity = $dirtyCartItem['quantity'];
                     $subTotal = $itemDetails['rent_price'] * $quantity;
-
                     $rentalDetails[$key]['rental_id'] = $rentalId;
                     $rentalDetails[$key]['item_id'] = $itemDetails['id'];
                     $rentalDetails[$key]['quantity'] = $quantity;
                     $rentalDetails[$key]['is_returned'] = false;
                     $rentalDetails[$key]['sub_total'] = $subTotal;
                 }
-
                 $status = RentalDetail::insert($rentalDetails);
             } catch (\Throwable $th) {
                 return Redirect::back()->withErrors([
@@ -138,9 +116,7 @@ class CheckoutController extends Controller
                 $pesan .= "Apakah tersedia untuk disewa?\nTerima kasih!";
                 $pesan = urlencode($pesan);
                 $phone = "6285281981717";
-
                 $whatsappUrl = "https://api.whatsapp.com/send?phone={$phone}&text={$pesan}";
-
                 return Redirect::to($whatsappUrl);
             } else {
                 return Redirect::back()->withErrors([

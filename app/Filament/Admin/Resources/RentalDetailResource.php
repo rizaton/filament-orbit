@@ -4,19 +4,16 @@ namespace App\Filament\Admin\Resources;
 
 use Filament\Forms;
 use App\Models\Item;
-
 use App\Models\Rental;
 use App\Models\RentalDetail;
 use App\Filament\Admin\Exports\RentalDetailExporter;
 use App\Filament\Admin\Resources\RentalDetailResource\Pages;
-
 use Filament\Tables;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-
 use Illuminate\Database\Eloquent\Builder;
 
 class RentalDetailResource extends Resource
@@ -30,7 +27,6 @@ class RentalDetailResource extends Resource
     protected static ?string $pluralModelLabel = 'List Detail Sewa';
     protected static ?string $modelLabel = 'Detail Sewa';
     protected static ?string $breadcrumb = 'Detail Sewa';
-
     public static function form(Form $form): Form
     {
         return $form
@@ -94,7 +90,6 @@ class RentalDetailResource extends Resource
                     ->required(),
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -165,7 +160,6 @@ class RentalDetailResource extends Resource
                             ->numeric()
                             ->integer()
                             ->minValue(0),
-
                         Forms\Components\TextInput::make('quantity_more_than')
                             ->label('Jumlah Lebih dari')
                             ->placeholder('contoh: 2')
@@ -236,7 +230,6 @@ class RentalDetailResource extends Resource
                             ->numeric()
                             ->maxLength(15)
                             ->minValue(0),
-
                         Forms\Components\TextInput::make('sub_total_more_than')
                             ->label('Sub total Lebih dari')
                             ->placeholder('contoh: 5000.00')
@@ -255,7 +248,6 @@ class RentalDetailResource extends Resource
                                 fn(Builder $query, $sub_total) => $query->where('sub_total', '>', $sub_total),
                             );
                     }),
-
             ])
             ->filtersFormColumns(4)
             ->filtersFormSchema(fn(array $filters): array => [
@@ -283,7 +275,6 @@ class RentalDetailResource extends Resource
                             'record' => $record,
                         ]))
                         ->form([]),
-
                     Tables\Actions\EditAction::make()
                         ->label('Ubah Detail Sewa'),
                     Tables\Actions\DeleteAction::make()

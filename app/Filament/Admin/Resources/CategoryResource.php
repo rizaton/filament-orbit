@@ -5,7 +5,6 @@ namespace App\Filament\Admin\Resources;
 use App\Models\Category;
 use App\Filament\Admin\Exports\CategoryExporter;
 use App\Filament\Admin\Resources\CategoryResource\Pages;
-
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Get;
@@ -13,7 +12,6 @@ use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -28,7 +26,6 @@ class CategoryResource extends Resource
     protected static ?string $pluralModelLabel = 'List Kategori';
     protected static ?string $modelLabel = 'Kategori';
     protected static ?string $breadcrumb = 'Kategori';
-
     public static function form(Form $form): Form
     {
         return $form

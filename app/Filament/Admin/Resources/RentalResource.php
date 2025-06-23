@@ -6,13 +6,11 @@ use App\Models\User;
 use App\Models\Rental;
 use App\Filament\Admin\Exports\RentalExporter;
 use App\Filament\Admin\Resources\RentalResource\Pages;
-
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-
 use Illuminate\Database\Eloquent\Builder;
 
 class RentalResource extends Resource
@@ -26,7 +24,6 @@ class RentalResource extends Resource
     protected static ?string $pluralModelLabel = 'List Penyewaan';
     protected static ?string $modelLabel = 'Penyewaan';
     protected static ?string $breadcrumb = 'Penyewaan';
-
     public static function form(Form $form): Form
     {
         return $form

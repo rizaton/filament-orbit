@@ -5,26 +5,21 @@ namespace App\Filament\Customer\Resources;
 use Filament\Forms;
 use App\Models\Item;
 use Filament\Tables;
-use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Customer\Resources\ItemResource\Pages;
-use App\Filament\Customer\Resources\ItemResource\RelationManagers;
 
 class ItemResource extends Resource
 {
     protected static ?string $model = Item::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-cube';
     protected static ?string $slug = 'items';
     protected static ?int $navigationSort = 2;
     protected static ?string $pluralModelLabel = 'Alat-Alat';
     protected static ?string $modelLabel = 'Alat';
     protected static ?string $breadcrumb = 'Alat';
-
     public static function table(Table $table): Table
     {
         return $table
@@ -33,10 +28,8 @@ class ItemResource extends Resource
                     ->label('Image')
                     ->formatStateUsing(function ($state) {
                         if (!$state) return null;
-
                         $base64 = base64_encode($state);
                         $mime = 'image/jpeg';
-
                         return "<img src='data:$mime;base64,{$base64}' height='60' />";
                     })
                     ->html()
@@ -125,7 +118,6 @@ class ItemResource extends Resource
                     ->form([]),
             ]);
     }
-
     public static function getPages(): array
     {
         return [

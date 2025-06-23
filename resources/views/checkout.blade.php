@@ -13,11 +13,9 @@
             phone: ''
         },
         rentInfoFilled: false,
-    
         openModal: false,
         termsOpenModal: false,
         rulesOpenModal: false,
-    
         termsChecked: false,
         rulesChecked: false,
         errorMsg: '',
@@ -100,12 +98,10 @@
                 <input type="hidden" name="phone" x-model="rentInfo.phone">
                 <input type="hidden" name="rentDate" x-model="rentInfo.rentDate">
                 <input type="hidden" name="returnDate" x-model="rentInfo.returnDate">
-
                 <div class="mx-auto max-w-3xl">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                         Sewa
                     </h2>
-
                     <div class="mt-6 space-y-4 border-b border-t border-gray-200 py-8 dark:border-gray-700 sm:mt-8">
                         <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
                             Informasi Penyewaan
@@ -193,7 +189,6 @@
                                 <dd class="text-lg font-bold text-gray-900 dark:text-white"
                                     x-text="`Rp.${Number(total()).toLocaleString()}`"></dd>
                             </dl>
-
                             <div class="flex items-start sm:items-center">
                                 <input type="hidden" name="terms" x-model="termsChecked">
                                 <input id="terms-checkbox-2" type="checkbox" x-model="termsChecked" name="terms"
@@ -230,7 +225,6 @@
                                     {{ $message }}
                                 </p>
                             @enderror
-
                             <template x-if="errorMsg">
                                 <div class="text-red-500 text-sm" x-text="errorMsg"></div>
                             </template>
@@ -274,7 +268,6 @@
                     <form class="p-4 md:p-5" @submit.prevent="saveRentInfo">
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-5">
                             <div class="sm:col-span-2">
-
                                 <div id="date-range-picker" date-rangepicker class="flex items-center">
                                     <div class="flex flex-col">
                                         <label for="datepicker-range-start"
@@ -323,7 +316,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="address_billing_modal"

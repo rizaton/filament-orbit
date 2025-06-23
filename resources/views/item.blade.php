@@ -72,7 +72,6 @@
                             alt="" />
                     @endif
                 </div>
-
                 <div class="mt-6 sm:mt-8 lg:mt-0">
                     <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
                         {{ $item->name }}
@@ -104,7 +103,6 @@
                                     cart.push([slug, 1, name, sewa, stock, sewa]);
                                 }
                                 localStorage.setItem('cart', JSON.stringify(cart));
-
                                 window.dispatchEvent(new CustomEvent('add-to-cart', {
                                     detail: { name }
                                 }));

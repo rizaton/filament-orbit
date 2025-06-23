@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Admin\Pages\Auth;
+namespace App\Filament\Auth;
 
+use Filament\Forms\Form;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\Auth\EditProfile as BaseEditProfile;
-use Filament\Forms\Form;
 
 class EditProfile extends BaseEditProfile
 {
@@ -26,12 +26,14 @@ class EditProfile extends BaseEditProfile
                                 ->tel()
                                 ->required()
                                 ->maxLength(15)
-                                ->placeholder('Masukkan nomor telepon Anda'),
+                                ->placeholder('Masukkan nomor telepon Anda')
+                                ->helperText('Pastikan nomor telepon Anda valid untuk menerima notifikasi penting.'),
                             TextInput::make('address')
                                 ->label('Alamat')
                                 ->required()
                                 ->maxLength(255)
-                                ->placeholder('Masukkan alamat Anda'),
+                                ->placeholder('Masukkan alamat Anda')
+                                ->helperText('Masukkan alamat lengkap Anda untuk pengiriman atau komunikasi.'),
                             Select::make('city')
                                 ->label('Kota Pengguna')
                                 ->required()
@@ -46,7 +48,6 @@ class EditProfile extends BaseEditProfile
                         ]),
                     ])
                     ->columns(1),
-
                 Section::make('Ubah Kata Sandi')
                     ->description('Jika Anda ingin mengubah kata sandi, silakan masukkan kata sandi baru di bawah ini.')
                     ->schema([

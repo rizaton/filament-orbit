@@ -28,15 +28,7 @@ class Rental extends Model
         'late_fees',
         'total_fees',
     ];
-
-
     protected $primaryKey = 'id_rental';
-
-    /**
-     * Atribut yang harus di-cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -50,44 +42,25 @@ class Rental extends Model
             'total_fees' => 'decimal:2'
         ];
     }
-
-    /**
-     * Mengambil data pengguna yang memproses sewa.
-     *
-     * @return BelongsTo<\Database\Eloquent\Relations\BelongsTo>
-     * @see \App\Models\User
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
-
-    /**
-     * Mengambil semua detail penyewaan yang terkait dengan sewa ini.
-     *
-     * @return HasMany<\Database\Eloquent\Relations\HasMany>
-     * @see \App\Models\RentalDetail
-     */
     public function rentalDetails(): HasMany
     {
         return $this->hasMany(RentalDetail::class, 'id_rental', 'id_rental');
     }
-
     protected static function booted()
     {
-
         static::updated(function (Rental $rental) {
             if (!$rental->wasChanged('status')) {
                 return;
             }
-
             foreach ($rental->rentalDetails as $detail) {
                 $item = $detail->item;
-
                 if (!$item || $detail->is_returned) {
                     continue;
                 }
-
                 if ($rental->status === 'approved') {
                     if ($item->is_available) {
                         $item->decrement('stock', $detail->quantity);
@@ -104,7 +77,6 @@ class Rental extends Model
             }
         });
     }
-
     public function getRentDurationInDays(?string $customReturnDate = null): int
     {
         try {
@@ -132,13 +104,11 @@ class Rental extends Model
             }
         }
     }
-
     public function recalculateTotals(?string $customReturnDate = null): void
     {
         try {
             $this->loadMissing(['rentalDetails.item', 'user']);
-            $rentDays = $this->getRentDurationInDays();
-
+            $rentDays = $this->getRentDurationInDays($customReturnDate);
             if (!$this->user || !$this->user->city) {
                 Log::warning('User or city missing during recalculateTotals', [
                     'rental_id' => $this->id_rental,
@@ -149,11 +119,9 @@ class Rental extends Model
                 $this->save();
                 return;
             }
-
             $this->total_fees = $this->rentalDetails->sum(function ($detail) use ($rentDays) {
                 return $detail->item?->rent_price * $detail->quantity * $rentDays ?? 0;
             });
-
             $this->down_payment = RentalDetail::calculateDownPayment($this->total_fees, $this->user->city);
             $this->save();
         } catch (\Throwable $th) {

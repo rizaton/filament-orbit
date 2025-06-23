@@ -6,18 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class Item extends Model
 {
     use HasFactory;
-    /**
-     * Atribut yang dapat diisi secara massal.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'slug',
         'name',
@@ -28,33 +22,12 @@ class Item extends Model
         'is_available',
         'image',
     ];
-
     protected $primaryKey = 'id_item';
-
-    /**
-     * Relasi dengan model Category.
-     *
-     * @var list<string>
-     * @see \App\Models\Category
-     */
     protected $with = ['category'];
-
-    /**
-     * Mengambil semua detail penyewaan yang terkait dengan item ini.
-     *
-     * @return HasMany<\Database\Eloquent\Relations\HasMany>
-     * @see \App\Models\RentalDetail
-     */
     public function rentaldetails(): HasMany
     {
         return $this->hasMany(RentalDetail::class);
     }
-
-    /**
-     * Atribut yang harus di-cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -67,25 +40,10 @@ class Item extends Model
             'is_available' => 'boolean',
         ];
     }
-
-    /**
-     * Mengambil detail kategori yang terkait dengan item ini.
-     *
-     * @return BelongsTo<\Database\Eloquent\Relations\BelongsTo>
-     * @see \App\Models\Category
-     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'id_category');
     }
-
-    /**
-     * Scope untuk memfilter item berdasarkan kriteria tertentu.
-     *
-     * @param Builder $query
-     * @param array $filters
-     * @return void
-     */
     public function scopeFilter(Builder $query, array $filters): void
     {
         $query->when(
@@ -160,12 +118,6 @@ class Item extends Model
             }
         );
     }
-
-    /**
-     * Method "booted" untuk menangani event model.
-     *
-     * @return void
-     */
     protected static function booted()
     {
         static::updated(function (Item $item) {
@@ -177,7 +129,6 @@ class Item extends Model
                     }
                     DB::transaction(function () use ($detail, $item) {
                         $detail->sub_total = $detail->quantity * $item->rent_price;
-
                         $detail->saveQuietly();
                     });
                 }

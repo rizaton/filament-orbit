@@ -12,7 +12,6 @@ Artisan::command('inspire', function () {
 Artisan::command('db:backup', function () {
     $backupFile = storage_path('app/backups/database_backup_' . date('Y_m_d_H_i_s') . '.sql');
     $command = "mysqldump --user=" . env('DB_USERNAME') . " --password=" . env('DB_PASSWORD') . " --host=" . env('DB_HOST') . " " . env('DB_DATABASE') . " > " . escapeshellarg($backupFile);
-
     if (system($command) === false) {
         $this->error('Database backup failed.');
         Log::warning('Database backup failed.', [

@@ -4,13 +4,10 @@ namespace App\Models;
 
 use App\Models\Item;
 use App\Models\Rental;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class RentalDetail extends Model
@@ -23,9 +20,7 @@ class RentalDetail extends Model
         'is_returned',
         'sub_total'
     ];
-
     protected $primaryKey = 'id_rental_detail';
-
     protected function casts(): array
     {
         return [
@@ -36,25 +31,20 @@ class RentalDetail extends Model
             'sub_total' => 'decimal:2',
         ];
     }
-
     protected $with = ['rental', 'item'];
-
     public function rental(): BelongsTo
     {
         return $this->belongsTo(Rental::class, 'id_rental', 'id_rental');
     }
-
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class, 'id_item', 'id_item');
     }
-
     protected static function booted()
     {
         static::created(function (RentalDetail $rentalDetail) {
             $rentalDetail->rental->recalculateTotals();
         });
-
         static::updating(function (RentalDetail $rentalDetail) {
             if ($rentalDetail->isDirty('quantity')) {
                 DB::transaction(function () use ($rentalDetail) {
@@ -64,7 +54,6 @@ class RentalDetail extends Model
             }
         });
     }
-
     protected static function calculateDownPayment(float $totalFees, string $city): float
     {
         try {
@@ -83,7 +72,6 @@ class RentalDetail extends Model
             return 0.0;
         }
     }
-
     public function recalculateSubtotal(): void
     {
         $this->loadMissing('item');
