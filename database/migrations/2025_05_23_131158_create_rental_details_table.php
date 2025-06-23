@@ -21,7 +21,7 @@ return new class extends Migration
                 table: 'items',
                 column: 'id_item'
             )->cascadeOnDelete();
-            $table->integer('quantity', 5)->default(1);
+            $table->integer('quantity')->default(1);
             $table->boolean('is_returned')->default(false);
             $table->decimal('sub_total', 15, 2);
             $table->timestamps();

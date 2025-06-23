@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 
 class RentalDetail extends Model
 {
-
+    use HasFactory;
     protected $fillable = [
         'id_rental',
         'id_item',

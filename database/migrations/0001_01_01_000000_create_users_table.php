@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id('id_user');
-            $table->string('name', 30);
+            $table->string('name', 40);
             $table->string('email', 40)->unique();
             $table->boolean('is_admin')->default(false);
-            $table->string('phone', 15);
+            $table->string('phone', 20);
             $table->text('address', 100);
             $table->enum('city', [
                 'Jakarta',

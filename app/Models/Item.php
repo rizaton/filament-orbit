@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class Item extends Model
 {
+    use HasFactory;
     /**
      * Atribut yang dapat diisi secara massal.
      *

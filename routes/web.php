@@ -29,9 +29,12 @@ Route::get('/cart', function () {
     return view('cart', [
         'items' => Item::all(),
     ]);
-})->name('items');
+})->name('cart');
 
 Route::controller(CheckoutController::class)->group(function () {
     Route::get('/checkout', 'create')->name('checkout.create');
     Route::post('/checkout', 'store')->name('checkout.store');
 });
+
+
+include __DIR__ . '/auth.php';

@@ -1,0 +1,99 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name orbitoutdoor.my.id www.orbitoutdoor.my.id;
+    root /www/wwwroot/orbitoutdoor.my.id;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+    charset utf-8;
+
+    location = /favicon.ico {
+        try_files /favicon.ico =404;
+        access_log off;
+        log_not_found off;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /robots.txt { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
+    location ~ ^/index\.php(/|$) {
+        fastcgi_pass unix:/tmp/php-cgi-83.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+        fastcgi_hide_header X-Powered-By;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+
+server
+{
+    listen 80;
+    server_name orbitoutdoor.my.id www.orbitoutdoor.my.id;
+    index index.php index.html index.htm default.php default.htm default.html;
+    root /www/wwwroot/orbitoutdoor.my.id;
+
+    #CERT-APPLY-CHECK--START
+    # Configuration related to file verification for SSL certificate application - Do not delete
+    include /www/server/panel/vhost/nginx/well-known/orbitoutdoor.my.id.conf;
+    #CERT-APPLY-CHECK--END
+    #SSL-START SSL related configuration, do NOT delete or modify the next line of commented-out 404 rules
+    #error_page 404/404.html;
+    
+    #SSL-END
+
+    #ERROR-PAGE-START  Error page configuration, allowed to be commented, deleted or modified
+    error_page 404 /404.html;
+    error_page 502 /502.html;
+    #ERROR-PAGE-END
+
+    #PHP-INFO-START  PHP reference configuration, allowed to be commented, deleted or modified
+    include enable-php-83.conf;
+    #PHP-INFO-END
+
+    #REWRITE-START URL rewrite rule reference, any modification will invalidate the rewrite rules set by the panel
+    include /www/server/panel/vhost/rewrite/orbitoutdoor.my.id.conf;
+    #REWRITE-END
+
+    # Forbidden files or directories
+    location ~ ^/(\.user.ini|\.htaccess|\.git|\.env|\.svn|\.project|LICENSE|README.md)
+    {
+        return 404;
+    }
+
+    # Directory verification related settings for one-click application for SSL certificate
+    location ~ \.well-known{
+        allow all;
+    }
+
+    #Prohibit putting sensitive files in certificate verification directory
+    if ( $uri ~ "^/\.well-known/.*\.(php|jsp|py|js|css|lua|ts|go|zip|tar\.gz|rar|7z|sql|bak)$" ) {
+        return 403;
+    }
+
+    location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$
+    {
+        expires      30d;
+        error_log /dev/null;
+        access_log /dev/null;
+    }
+
+    location ~ .*\.(js|css)?$
+    {
+        expires      12h;
+        error_log /dev/null;
+        access_log /dev/null; 
+    }
+    access_log  /www/wwwlogs/orbitoutdoor.my.id.log;
+    error_log  /www/wwwlogs/orbitoutdoor.my.id.error.log;
+}

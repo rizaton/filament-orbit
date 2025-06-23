@@ -1,6 +1,7 @@
 <?php
 
 use App\LateScheduler;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Application;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -13,7 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->trustProxies(
+            at: '*',
+        );
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
@@ -21,4 +24,5 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
         $schedule->call(new LateScheduler)->dailyAt('00:00');
         $schedule->command('db:backup')->dailyAt('01:00');
+        $schedule->command('auth:clear-resets')->hourly();
     })->create();

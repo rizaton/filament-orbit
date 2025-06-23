@@ -29,8 +29,17 @@ class ItemResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Gambar Alat')
+                Tables\Columns\TextColumn::make('image')
+                    ->label('Image')
+                    ->formatStateUsing(function ($state) {
+                        if (!$state) return null;
+
+                        $base64 = base64_encode($state);
+                        $mime = 'image/jpeg';
+
+                        return "<img src='data:$mime;base64,{$base64}' height='60' />";
+                    })
+                    ->html()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Alat')

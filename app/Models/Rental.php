@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Rental extends Model
 {
+    use HasFactory;
     protected $guarded = [];
     /**
      * Atribut yang dapat diisi secara massal.

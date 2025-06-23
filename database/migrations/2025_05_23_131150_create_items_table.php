@@ -20,7 +20,7 @@ return new class extends Migration
             )->onDelete('cascade');
             $table->string('name', 100);
             $table->string('slug', 255)->unique();
-            $table->integer('stock', 5)->default(0);
+            $table->integer('stock')->default(0);
             $table->text('description')->nullable();
             $table->boolean('is_available')->default(false);
             $table->decimal('rent_price', 15, 2);
