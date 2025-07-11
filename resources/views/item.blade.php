@@ -62,8 +62,7 @@
             <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
                 <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
                     @if ($item->image)
-                        <img class="mx-auto h-full" src="data:image/png;base64,{{ $item->image }}"
-                            alt="image-{{ $item->slug }}">
+                        <img class="mx-auto h-full" src="{{ $item->image }}" alt="image-{{ $item->slug }}">
                     @else
                         <img class="w-full dark:hidden"
                             src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg" alt="" />

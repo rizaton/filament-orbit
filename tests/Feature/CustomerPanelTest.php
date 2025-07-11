@@ -18,22 +18,22 @@ beforeEach(function () {
     $this->actingAs($user);
 });
 
-it('can render item index page', function () {
+it('bisa menampilkan item index page', function () {
     livewire(ManageItems::class)
         ->assertSuccessful();
 });
 
-it('can render rental list page', function () {
+it('bisa menampilkan rental list page', function () {
     livewire(ListRentals::class)
         ->assertSuccessful();
 });
 
-it('can render create rental form', function () {
+it('bisa menampilkan create rental form', function () {
     livewire(CreateRental::class)
         ->assertSuccessful();
 });
 
-it('can render edit rental date form', function () {
+it('bisa menampilkan edit rental date form', function () {
     $rental = Rental::factory()->create();
 
     livewire(EditRental::class, ['record' => $rental->getKey()])

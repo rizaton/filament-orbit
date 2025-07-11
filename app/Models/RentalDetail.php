@@ -21,17 +21,13 @@ class RentalDetail extends Model
         'sub_total'
     ];
     protected $primaryKey = 'id_rental_detail';
-    protected function casts(): array
-    {
-        return [
-            'id_rental' => 'integer',
-            'id_item' => 'integer',
-            'quantity' => 'integer',
-            'is_returned' => 'boolean',
-            'sub_total' => 'decimal:2',
-        ];
-    }
-    protected $with = ['rental', 'item'];
+    protected $casts = [
+        'id_rental' => 'integer',
+        'id_item' => 'integer',
+        'quantity' => 'integer',
+        'is_returned' => 'boolean',
+        'sub_total' => 'decimal:2',
+    ];
     public function rental(): BelongsTo
     {
         return $this->belongsTo(Rental::class, 'id_rental', 'id_rental');
@@ -42,13 +38,29 @@ class RentalDetail extends Model
     }
     protected static function booted()
     {
+        static::creating(function (RentalDetail $rentalDetail) {
+            $rentalDetail->loadMissing('item');
+            $price = (float) $rentalDetail->item->rent_price;
+            $qty = (int) $rentalDetail->quantity;
+            if ($price <= 0 || $qty <= 0) {
+                Log::error('Invalid rental detail values', [
+                    'price' => $price,
+                    'quantity' => $qty,
+                    'item_id' => $rentalDetail->id_item,
+                ]);
+                throw new \InvalidArgumentException('Price and quantity must be greater than 0.');
+            }
+            $rentalDetail->sub_total = $price * $qty;
+        });
         static::created(function (RentalDetail $rentalDetail) {
             $rentalDetail->rental->recalculateTotals();
         });
         static::updating(function (RentalDetail $rentalDetail) {
             if ($rentalDetail->isDirty('quantity')) {
                 DB::transaction(function () use ($rentalDetail) {
-                    $rentalDetail->recalculateSubtotal();
+                    $rentalDetail->loadMissing('item');
+                    $rentalDetail->sub_total = $rentalDetail->item->rent_price * $rentalDetail->quantity;
+                    $rentalDetail->saveQuietly();
                     $rentalDetail->rental->recalculateTotals();
                 });
             }

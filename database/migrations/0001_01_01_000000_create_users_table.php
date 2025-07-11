@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id('id_user');
+            $table->integerIncrements('id_user');
             $table->string('name', 40);
-            $table->string('email', 40)->unique();
+            $table->string('email', 50)->unique();
             $table->boolean('is_admin')->default(false);
             $table->string('phone', 20);
-            $table->text('address', 100);
+            $table->text('address');
             $table->enum('city', [
                 'Jakarta',
                 'Bogor',
@@ -27,7 +27,7 @@ return new class extends Migration
                 'Luar Jabodetabek',
             ])->default('Luar Jabodetabek');
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password', 255);
+            $table->string('password', 60);
             $table->rememberToken();
             $table->timestamps();
         });

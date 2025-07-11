@@ -29,63 +29,63 @@ beforeEach(function () {
     $this->actingAs($user);
 });
 
-it('can render category index page', function () {
+it('bisa menampilkan category index page', function () {
     livewire(ListCategories::class)
         ->assertSuccessful();
 });
-it('can render category create form page', function () {
+it('bisa menampilkan category create form page', function () {
     livewire(CreateCategory::class)
         ->assertSuccessful();
 });
-it('can render category edit form page', function () {
+it('bisa menampilkan category edit form page', function () {
     $category = Category::factory()->create();
     livewire(EditCategory::class, ['record' => $category->getKey()])
         ->assertSuccessful();
 });
 
-it('can render item index page', function () {
+it('bisa menampilkan item index page', function () {
     livewire(ListItems::class)
         ->assertSuccessful();
 });
-it('can render item create form page', function () {
+it('bisa menampilkan item create form page', function () {
     livewire(CreateItem::class)
         ->assertSuccessful();
 });
-it('can render item edit form page', function () {
+it('bisa menampilkan item edit form page', function () {
     $item = Item::factory()->create();
     livewire(EditCategory::class, ['record' => $item->getKey()])
         ->assertSuccessful();
 });
 
-it('can render rental index page', function () {
+it('bisa menampilkan rental index page', function () {
     livewire(ListRentals::class)
         ->assertSuccessful();
 });
-it('can render rental form page', function () {
+it('bisa menampilkan rental form page', function () {
     livewire(CreateRental::class)
         ->assertSuccessful();
 });
-it('can render rental edit form page', function () {
+it('bisa menampilkan rental edit form page', function () {
     $rental = Rental::factory()->create();
     livewire(EditRental::class, ['record' => $rental->getKey()])
         ->assertSuccessful();
 });
 
-it('can render rental detail index page', function () {
+it('bisa menampilkan rental detail index page', function () {
     livewire(ListRentalDetails::class)
         ->assertSuccessful();
 });
-it('can render rental detail form page', function () {
+it('bisa menampilkan rental detail form page', function () {
     livewire(CreateRentalDetail::class)
         ->assertSuccessful();
 });
-it('can render rental detail edit form page', function () {
+it('bisa menampilkan rental detail edit form page', function () {
     $rentalDetail = RentalDetail::factory()->create();
     livewire(EditRentalDetail::class, ['record' => $rentalDetail->getKey()])
         ->assertSuccessful();
 });
 
-it('can render user index page', function () {
+it('bisa menampilkan user index page', function () {
     livewire(ManageUsers::class)
         ->assertSuccessful();
 });

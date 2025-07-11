@@ -90,12 +90,47 @@
                         </a>
                     </div>
                 @endif
+                {{-- BUTTON START --}}
+                <button id="userDropdownButton1" data-dropdown-toggle="userDropdown1" type="button"
+                    class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white">
+                    <svg class="w-5 h-5 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                        height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-width="2"
+                            d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    <span class="hidden sm:flex">Akun</span>
+                    <svg class="hidden sm:flex w-4 h-4 text-gray-900 dark:text-white ms-1" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                        viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m19 9-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <div id="userDropdown1"
+                    class="hidden z-10 w-56 divide-y divide-gray-100 overflow-hidden overflow-y-auto rounded-lg bg-white antialiased shadow dark:divide-gray-600 dark:bg-gray-700">
+                    <ul class="p-2 text-start text-sm font-medium text-gray-900 dark:text-white">
+                        <li>
+                            <a href="/customer/login" title="login"
+                                class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600">
+                                Login
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/customer/register" title="register"
+                                class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600">
+                                Registrasi
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                {{-- BUTTON END --}}
 
                 <button type="button" data-collapse-toggle="ecommerce-navbar-menu-1"
                     aria-controls="ecommerce-navbar-menu-1" aria-expanded="false"
                     class="inline-flex lg:hidden items-center justify-center hover:bg-gray-100 rounded-md dark:hover:bg-gray-700 p-2 text-gray-900 dark:text-white">
                     <span class="sr-only">
-                        Open Menu
+                        Buka Menu
                     </span>
                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                         height="24" fill="none" viewBox="0 0 24 24">
@@ -111,7 +146,6 @@
             <ul class="text-gray-900 dark:text-white text-sm font-medium space-y-3">
                 <x-navbar-link href="/" :active="request()->is('/') ? 'page' : false">Beranda</x-navbar-link>
                 <x-navbar-link href="/items" :active="request()->is('/items') ? 'page' : false">Alat</x-navbar-link>
-                <x-navbar-link href="/contact" :active="request()->is('/contact') ? 'page' : false">Kontak</x-navbar-link>
             </ul>
         </div>
     </div>

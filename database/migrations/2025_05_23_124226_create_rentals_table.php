@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,11 +13,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rentals', function (Blueprint $table) {
-            $table->id('id_rental');
-            $table->foreignId('id_user')->nullable()->constrained(
-                table: 'users',
-                column: 'id_user'
-            )->nullOnDelete();
+            $table->integerIncrements('id_rental');
+            $table->unsignedInteger('id_user')->index()->nullable();
+            $table->foreign('id_user')
+                ->references('id_user')
+                ->on('users')
+                ->nullOnDelete();
             $table->enum('status', [
                 'pending',
                 'approved',

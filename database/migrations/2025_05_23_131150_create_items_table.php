@@ -13,20 +13,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('items', function (Blueprint $table) {
-            $table->id('id_item');
-            $table->foreignId('id_category')->constrained(
-                table: 'categories',
-                column: 'id_category'
-            )->onDelete('cascade');
+            $table->smallIncrements('id_item');
+            $table->unsignedTinyInteger('id_category')->index()->nullable();
+            $table->foreign('id_category')
+                ->references('id_category')
+                ->on('categories')
+                ->nullOnDelete();
             $table->string('name', 100);
-            $table->string('slug', 255)->unique();
+            $table->char('slug', 32)->unique();
             $table->integer('stock')->default(0);
             $table->text('description')->nullable();
+            $table->binary('image')->nullable();
             $table->boolean('is_available')->default(false);
             $table->decimal('rent_price', 15, 2);
             $table->timestamps();
         });
-        DB::statement("ALTER TABLE items ADD image MEDIUMBLOB NULL");
+        // DB::statement("ALTER TABLE items ADD image MEDIUMBLOB NULL");
     }
 
     /**

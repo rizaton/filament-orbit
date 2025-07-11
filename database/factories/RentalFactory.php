@@ -28,12 +28,8 @@ class RentalFactory extends Factory
                 'returned',
                 'late'
             ]),
-            'down_payment' => fake()->randomFloat(2, 0, 1000000),
             'rent_date' => fake()->date(),
             'return_date' => fake()->date(),
-            'late_date' => fake()->optional()->date(),
-            'late_fees' => fake()->optional()->randomFloat(2, 0, 1000000),
-            'total_fees' => fake()->optional()->randomFloat(2, 0, 1000000),
         ];
     }
 }

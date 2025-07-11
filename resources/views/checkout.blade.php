@@ -36,8 +36,7 @@
                             Number(itemData.rent_price), // sewa price
                             Number(itemData.stock), // stock
                             item[5], // sewa total
-                            itemData.image ?
-                            'data:image/png;base64,' + itemData.image : null,
+                            itemData.image ? itemData.image : null,
                         ];
                     }
                     return item;
@@ -122,7 +121,7 @@
                             </div>
                         </template>
                         <button type="button" @click="openModal = ! openModal"
-                            class="text-base font-medium text-primary-700 hover:underline dark:text-primary-500">
+                            class="text-base font-medium text-blue-700 hover:underline dark:text-blue-400">
                             Ubah
                         </button>
                     </div>
@@ -142,11 +141,9 @@
                                                     <div class="flex items-center aspect-square w-10 h-10 shrink-0">
                                                         <template x-if="!item[6]">
                                                             <img class="h-auto w-full max-h-full dark:hidden"
-                                                                src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg"
-                                                                alt="item image" />
+                                                                src="/images/default-light.svg" alt="item image" />
                                                             <img class="hidden h-auto w-full max-h-full dark:block"
-                                                                src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
-                                                                alt="item image" />
+                                                                src="/images/default-dark.svg" alt="item image" />
                                                         </template>
                                                         <template x-if="item[6]">
                                                             <img :src="item[6]" :alt="item[0]"
@@ -192,12 +189,12 @@
                             <div class="flex items-start sm:items-center">
                                 <input type="hidden" name="terms" x-model="termsChecked">
                                 <input id="terms-checkbox-2" type="checkbox" x-model="termsChecked" name="terms"
-                                    class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
+                                    class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-400" />
                                 <label for="terms-checkbox-2"
                                     class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"> Saya setuju
                                     dengan
                                     <button type="button" @click="termsOpenModal = ! termsOpenModal"
-                                        class="text-primary-700 underline hover:no-underline dark:text-primary-500">
+                                        class="text-blue-700 underline hover:no-underline dark:text-blue-400">
                                         Syarat dan Ketentuan Penyewaan
                                     </button> dari Orbit Outdoor
                                 </label>
@@ -210,12 +207,12 @@
                             <div class="flex items-start sm:items-center">
                                 <input type="hidden" name="rules" x-model="rulesChecked">
                                 <input id="terms-checkbox-3" type="checkbox" x-model="rulesChecked" name="rules"
-                                    class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
+                                    class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-400" />
                                 <label for="terms-checkbox-3"
                                     class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"> Saya setuju
                                     dengan
                                     <button type="button" @click="rulesOpenModal = ! rulesOpenModal"
-                                        class="text-primary-700 underline hover:no-underline dark:text-primary-500">
+                                        class="text-blue-700 underline hover:no-underline dark:text-blue-400">
                                         Tata tertib penyewaan
                                     </button> dari Orbit Outdoor
                                 </label>
@@ -230,11 +227,11 @@
                             </template>
                             <div class="gap-4 sm:flex sm:items-center">
                                 <a href="/cart"
-                                    class="w-full rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 text-center block">
+                                    class="w-full rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 text-center block">
                                     Kembali ke daftar keranjang
                                 </a>
                                 <button type="submit"
-                                    class="mt-4 flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 sm:mt-0">
+                                    class="mt-4 flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:mt-0">
                                     Sewa sekarang
                                 </button>
                             </div>
@@ -243,6 +240,7 @@
                 </div>
             </form>
         </section>
+        <!-- Modal untuk informasi sewa -->
         <div tabindex="-1" x-show="openModal" x-transition:enter="transition ease-out duration-300"
             class="antialiased fixed left-0 right-0 top-0 z-50 h-[calc(100%-1rem)] max-h-auto w-full max-h-full flex items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0">
             <div class="relative max-h-auto w-full max-h-full max-w-lg p-4">
@@ -254,13 +252,14 @@
                         </h3>
                         <button type="button" x-on:click="openModal = false"
                             class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white">
+                            <!-- Ikon tutup -->
                             <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 14 14">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d=" m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                    stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                             </svg>
                             <span class="sr-only">
-                                Close modal
+                                Tutup modal
                             </span>
                         </button>
                     </div>
@@ -383,6 +382,7 @@
                 </div>
             </div>
         </div>
+        <!-- Modal syarat dan ketentuan -->
         <div tabindex="-1" x-show="termsOpenModal" x-transition:enter="transition ease-out duration-300"
             class="antialiased fixed left-0 right-0 top-0 z-50 h-[calc(100%-1rem)] max-h-auto w-full max-h-full flex items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0">
             <div class="relative max-h-auto w-full max-h-full max-w-lg lg:max-w-4xl p-4">
@@ -394,13 +394,14 @@
                         </h3>
                         <button type="button" x-on:click="termsOpenModal = false"
                             class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white">
+                            <!-- Ikon tutup -->
                             <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 14 14">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                     stroke-width="2" d=" m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                             </svg>
                             <span class="sr-only">
-                                Close modal
+                                Tutup modal
                             </span>
                         </button>
                     </div>
@@ -409,7 +410,7 @@
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-5">
                             <div class="sm:col-span-2">
                                 <h2 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-                                    Syarat dan Ketentuan Penyewaan di Orbit Outdoor:
+                                    Syarat dan Ketentuan Penyewaan di Orbit Rental Outdoor:
                                 </h2>
                                 <ul
                                     class="max-w-md sm:max-w-3xl space-y-1 text-gray-700 list-disc list-inside dark:text-gray-400">
@@ -458,6 +459,7 @@
                 </div>
             </div>
         </div>
+        <!-- Modal tata tertib -->
         <div tabindex="-1" x-show="rulesOpenModal" x-transition:enter="transition ease-out duration-300"
             class="antialiased fixed left-0 right-0 top-0 z-50 h-[calc(100%-1rem)] max-h-auto w-full max-h-full flex items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0">
             <div class="relative max-h-auto w-full max-h-full max-w-lg lg:max-w-2xl p-4">
@@ -469,13 +471,14 @@
                         </h3>
                         <button type="button" x-on:click="rulesOpenModal = false"
                             class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white">
+                            <!-- Ikon tutup -->
                             <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 14 14">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                     stroke-width="2" d=" m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                             </svg>
                             <span class="sr-only">
-                                Close modal
+                                Tutup modal
                             </span>
                         </button>
                     </div>
@@ -484,7 +487,7 @@
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-5">
                             <div class="sm:col-span-2">
                                 <h2 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-                                    Tata tertib Penyewaan di Orbit Outdoor:
+                                    Tata tertib Penyewaan di Orbit Rental Outdoor:
                                 </h2>
                                 <ul
                                     class="max-w-md sm:max-w-xl space-y-1 text-gray-700 list-disc list-inside dark:text-gray-400">

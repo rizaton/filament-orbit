@@ -182,11 +182,9 @@
                         <div class="h-56 w-full">
                             <a href="/items/{{ $item->slug }}">
                                 @if ($item->image)
-                                    <img class="mx-auto h-full dark:hidden"
-                                        src="data:image/png;base64,{{ $item->image }}"
+                                    <img class="mx-auto h-full dark:hidden" src="{{ $item->image }}"
                                         alt="image-{{ $item->slug }}">
-                                    <img class="mx-auto hidden h-full dark:block"
-                                        src="data:image/png;base64,{{ $item->image }}"
+                                    <img class="mx-auto hidden h-full dark:block" src="{{ $item->image }}"
                                         alt="image-{{ $item->slug }}">
                                 @else
                                     <img class="mx-auto h-full dark:hidden"

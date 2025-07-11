@@ -24,15 +24,8 @@ class ItemResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('image')
+                Tables\Columns\ImageColumn::make('image')
                     ->label('Image')
-                    ->formatStateUsing(function ($state) {
-                        if (!$state) return null;
-                        $base64 = base64_encode($state);
-                        $mime = 'image/jpeg';
-                        return "<img src='data:$mime;base64,{$base64}' height='60' />";
-                    })
-                    ->html()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Alat')
@@ -114,7 +107,7 @@ class ItemResource extends Resource
                     ->modalHeading(fn($record) => "Detail Alat: {$record->name}")
                     ->modalContent(fn($record) => view('filament.custom.item-customer', [
                         'record' => $record,
-                    ])->render())
+                    ]))
                     ->form([]),
             ]);
     }

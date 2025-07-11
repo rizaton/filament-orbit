@@ -21,9 +21,8 @@ class RentalDetailFactory extends Factory
         return [
             'id_rental' => Rental::factory(),
             'id_item' => Item::factory(),
-            'quantity' => fake()->numberBetween(1, 10),
-            'is_returned' => fake()->boolean(20),
-            'sub_total' => fake()->randomFloat(2, 1000, 1000000),
+            'quantity' => fake()->numberBetween(1, 5),
+            'is_returned' => false,
         ];
     }
 }

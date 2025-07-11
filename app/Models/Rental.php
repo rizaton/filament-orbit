@@ -13,11 +13,6 @@ class Rental extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    /**
-     * Atribut yang dapat diisi secara massal.
-     * 
-     * @var list<string>
-     */
     protected $fillable = [
         'id_user',
         'status',

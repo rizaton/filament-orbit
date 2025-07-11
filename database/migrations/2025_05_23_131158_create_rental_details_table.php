@@ -12,18 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rental_details', function (Blueprint $table) {
-            $table->id('id_rental_detail');
-            $table->foreignId('id_rental')->constrained(
-                table: 'rentals',
-                column: 'id_rental'
-            )->cascadeOnDelete();
-            $table->foreignId('id_item')->constrained(
-                table: 'items',
-                column: 'id_item'
-            )->cascadeOnDelete();
+            $table->bigIncrements('id_rental_detail');
+
+            $table->unsignedInteger('id_rental')->index()->nullable();
+            $table->foreign('id_rental')
+                ->references('id_rental')
+                ->on('rentals')
+                ->nullOnDelete();
+
+            $table->unsignedSmallInteger('id_item')->index()->nullable();
+            $table->foreign('id_item')
+                ->references('id_item')
+                ->on('items')
+                ->nullOnDelete();
+
             $table->integer('quantity')->default(1);
             $table->boolean('is_returned')->default(false);
-            $table->decimal('sub_total', 15, 2);
+            $table->decimal('sub_total', 15, 2)->nullable();
             $table->timestamps();
         });
     }
