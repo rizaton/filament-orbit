@@ -38,6 +38,7 @@ class Item extends Model
             'description' => 'string',
             'category_id' => 'integer',
             'is_available' => 'boolean',
+            'image' => 'string',
         ];
     }
     public function category(): BelongsTo

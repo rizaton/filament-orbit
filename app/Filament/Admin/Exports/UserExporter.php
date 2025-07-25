@@ -6,10 +6,18 @@ use App\Models\User;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
+use Filament\Actions\Exports\Enums\ExportFormat;
 
 class UserExporter extends Exporter
 {
     protected static ?string $model = User::class;
+
+    public function getFormats(): array
+    {
+        return [
+            ExportFormat::Csv,
+        ];
+    }
 
     public static function getColumns(): array
     {
@@ -21,8 +29,7 @@ class UserExporter extends Exporter
             ExportColumn::make('email')
                 ->label('Email Pengguna'),
             ExportColumn::make('is_admin')
-                ->label('Status Pengguna')
-                ->formatUsing(fn(bool $value) => $value ? 'Admin' : 'Pelanggan Biasa'),
+                ->label('Status Pengguna'),
             ExportColumn::make('phone')
                 ->label('Nomor Telepon Pengguna'),
             ExportColumn::make('address')
@@ -30,14 +37,11 @@ class UserExporter extends Exporter
             ExportColumn::make('city')
                 ->label('Kota Pengguna'),
             ExportColumn::make('email_verified_at')
-                ->label('Email Terverifikasi')
-                ->formatUsing(fn($value) => $value ? $value->format('Y-m-d H:i:s') : 'Tidak Terverifikasi'),
+                ->label('Email Terverifikasi'),
             ExportColumn::make('created_at')
-                ->label('Tanggal Dibuat')
-                ->formatUsing(fn($value) => $value->format('Y-m-d H:i:s')),
+                ->label('Tanggal Dibuat'),
             ExportColumn::make('updated_at')
-                ->label('Tanggal Diperbarui')
-                ->formatUsing(fn($value) => $value->format('Y-m-d H:i:s')),
+                ->label('Tanggal Diperbarui'),
         ];
     }
 

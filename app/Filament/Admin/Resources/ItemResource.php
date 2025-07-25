@@ -2,19 +2,22 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Models\Item;
-use App\Models\Category;
-use App\Filament\Admin\Exports\ItemExporter;
-use App\Filament\Admin\Resources\ItemResource\Pages;
 use Filament\Forms;
+use App\Models\Item;
 use Filament\Tables;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
+use Intervention\Image\ImageManager;
 use Illuminate\Database\Eloquent\Builder;
+use Intervention\Image\Drivers\Gd\Driver;
+use App\Filament\Admin\Exports\ItemExporter;
+use App\Filament\Admin\Resources\ItemResource\Pages;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ItemResource extends Resource
 {
@@ -93,12 +96,29 @@ class ItemResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('rent_price')
                     ->label('Harga Sewa')
-                    ->maxLength(15)
                     ->required()
                     ->numeric(),
-                Forms\Components\FileUpload::make('image')
+                Forms\Components\FileUpload::make('image_upload')
                     ->label('Gambar')
-                    ->image(),
+                    ->image()
+                    ->dehydrated(false)
+                    ->afterStateUpdated(function (Get $get, Set $set, ?string $old, TemporaryUploadedFile $state) {
+                        if (($state->getRealPath() ?? '') === $old) {
+                            return;
+                        }
+                        $imagePath = $state->getRealPath();
+                        $manager = new ImageManager(new Driver());
+                        $image = $manager->read($imagePath)
+                            ->scale(width: 500);
+                        $encoded = $image->encodeByMediaType('image/jpg', quality: 50);
+                        $base64 = $encoded->toDataUri();
+                        $set('image', $base64);
+                    }),
+                Forms\Components\Hidden::make('image')
+                    ->label('Base64 Gambar')
+                    ->required()
+                    ->dehydrated(),
+
             ]);
     }
     public static function table(Table $table): Table

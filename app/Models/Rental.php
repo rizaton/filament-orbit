@@ -63,11 +63,11 @@ class Rental extends Model
                     }
                 } elseif ($rental->status === 'returned' && !$detail->is_returned) {
                     $item->increment('stock', $detail->quantity);
-                    RentalDetail::where('rental_id', $rental->id)->update(['is_returned' => true]);
+                    RentalDetail::where('id_rental', $rental->id_rental)->update(['is_returned' => true]);
                 } elseif ($rental->isDirty('status') && $rental->status === 'pending' && $rental->original('status') === 'approved') {
                     $item->increment('stock', $detail->quantity);
                     $item->update(['is_available' => true]);
-                    RentalDetail::where('rental_id', $rental->id)->update(['is_returned' => false]);
+                    RentalDetail::where('id_rental', $rental->id_rental)->update(['is_returned' => false]);
                 }
             }
         });
@@ -82,7 +82,7 @@ class Rental extends Model
             return $rentDate->diffInDays($returnDate) + 1;
         } catch (\Exception $e) {
             Log::error('Error calculating rent duration', [
-                'rental_id' => $this->id_rental,
+                'id_rental' => $this->id_rental,
                 'error' => $e->getMessage(),
                 'timestamp' => now(),
             ]);
@@ -90,7 +90,7 @@ class Rental extends Model
                 return Carbon::parse($this->rent_date)->diffInDays(Carbon::parse($this->return_date)) + 1;
             } else {
                 Log::warning('Invalid rent or return date for rental', [
-                    'rental_id' => $this->id_rental,
+                    'id_rental' => $this->id_rental,
                     'rent_date' => $this->rent_date,
                     'return_date' => $this->return_date,
                     'timestamp' => now(),

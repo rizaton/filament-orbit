@@ -21,8 +21,8 @@ return new class extends Migration
             $table->unsignedInteger('processed_rows')->default(0);
             $table->unsignedInteger('total_rows');
             $table->unsignedInteger('successful_rows')->default(0);
-            $table->unsignedInteger('id_user')->index()->nullable();
-            $table->foreign('id_user')
+            $table->unsignedInteger('user_id_user')->index()->nullable();
+            $table->foreign('user_id_user')
                 ->references('id_user')
                 ->on('users')
                 ->nullOnDelete();
