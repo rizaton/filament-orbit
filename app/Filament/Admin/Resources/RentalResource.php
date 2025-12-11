@@ -201,9 +201,6 @@ class RentalResource extends Resource
                         'returned' => 'Dikembalikan',
                         'late' => 'Terlambat',
                     ])->label('Status'),
-                Tables\Filters\SelectFilter::make('user.name')
-                    ->label('Diproses oleh')
-                    ->relationship('user', 'name'),
                 Tables\Filters\Filter::make('rent_date')
                     ->form([
                         Forms\Components\DatePicker::make('rent_from')->label('Tanggal sewa dari'),
@@ -338,7 +335,6 @@ class RentalResource extends Resource
                         Forms\Components\Grid::make(1)
                             ->schema([
                                 $filters['status'],
-                                $filters['user.name'],
                                 $filters['down_payment'],
                             ])->columnSpan(1),
                         Forms\Components\Grid::make(3)
